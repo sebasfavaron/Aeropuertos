@@ -1,3 +1,4 @@
+package src;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -111,6 +112,15 @@ public abstract class GraphAdjList<V, E> {
         }
     }
 
+    //HECHA POR SEBAS, NO SE SI ESTA BIEN
+    public V getVertex(String vertex) {
+        for(Node node : getNodes()) {
+            if(node.info.toString().equals(vertex))
+                return node.info;
+        }
+        return null;
+    }
+
     public void addArc(V v, V w, E e) {
         Node origin = nodes.get(v);
         Node dest = nodes.get(w);
@@ -125,6 +135,17 @@ public abstract class GraphAdjList<V, E> {
         }
     }
 
+    //HECHA POR SEBAS, NO SE SI ESTA BIEN
+    public E getArc(String arc) {
+        for(Node node : getNodes()) {
+            for(Arc adj : node.adj) {
+                if(adj.toString().equals(arc))
+                    return adj.info;
+            }
+        }
+        return null;
+    }
+
     public int arcCount() {
         int count = 0;
         for (Node n : getNodes())
@@ -135,7 +156,7 @@ public abstract class GraphAdjList<V, E> {
     }
 
 
-    public void RemoveArc(V v, V w) {
+    public void removeArc(V v, V w) {
         Node origin = nodes.get(v);
         if (origin == null)
             return;
@@ -215,6 +236,13 @@ public abstract class GraphAdjList<V, E> {
 
         // Eliminar el nodo
         nodes.remove(v);
+    }
+
+    public void removeAllVertex() {
+        Iterator<V> it = nodes.keySet().iterator();
+        while(it.hasNext()) {
+            nodes.remove(it.next());
+        }
     }
 
     public int vertexCount() {

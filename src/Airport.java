@@ -1,9 +1,15 @@
-import java.util.List;
+package src;
 
 public class Airport {
     private String name;
     private Double lat;
     private Double lng;
+
+    public Airport(String name, Double lat, Double lng) {
+        this.name = name;
+        this.lat = lat;
+        this.lng = lng;
+    }
 
     public String getName() {
         return name;
@@ -27,5 +33,9 @@ public class Airport {
 
     public void setLng(Double lng) {
         this.lng = lng;
+    }
+
+    public String toString() {
+        return name;
     }
 }

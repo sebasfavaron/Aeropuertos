@@ -1,14 +1,28 @@
+package src;
+
 import java.sql.Time;
 import java.util.List;
 
 public class Flight {
     private String airline;
     private Integer number;
-    private List<String > weekDay;
+    private List<String> weekDay;
     private Airport departure;
     private Airport arrival;
     private Time departureTime;
-    private Integer duration;
+    private Double duration;
+    private Double price;
+
+    public Flight(String airline, Integer number, List<String> weekDay, Airport departure, Airport arrival, Time departureTime, Double duration, Double price) {
+        this.airline = airline;
+        this.number = number;
+        this.weekDay = weekDay;
+        this.departure = departure;
+        this.arrival = arrival;
+        this.departureTime = departureTime;
+        this.duration = duration;
+        this.price = price;
+    }
 
     public String getAirline() {
         return airline;
@@ -58,11 +72,11 @@ public class Flight {
         this.departureTime = departureTime;
     }
 
-    public Integer getDuration() {
+    public Double getDuration() {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(Double duration) {
         this.duration = duration;
     }
 
@@ -74,7 +88,17 @@ public class Flight {
         this.price = price;
     }
 
-    private Double price;
+    public boolean equals(Object o) {
+        if(o == null)
+            return false;
+        if(!(o instanceof Flight))
+            return false;
+        Flight fl = (Flight)o;
+        return this.airline.equals(fl.airline) && this.number.equals(fl.number);
+    }
 
+    public String toString() {
+        return airline + "#" + number.toString();
+    }
 
 }
