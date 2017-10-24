@@ -1,27 +1,21 @@
 package src;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  *
  * Clase abstracta para Grafos (no multigrafos). No soporta multigrafos ni lazos
  *
- * @param <V>
- * @param <E>
+
  */
-public abstract class GraphAdjList<V, E> {
+public abstract class GraphAdjList{
 
     private class Node {
-        public V info;
+        public Airport info;
         public boolean visited;
         public List<Arc> adj;
 
-        public Node(V info) {
+        public Node(Airport info) {
             this.info = info;
             this.visited = false;
             this.adj = new ArrayList<Arc>();
@@ -54,10 +48,11 @@ public abstract class GraphAdjList<V, E> {
     }
 
     private class Arc {
-        public E info;
+        public Flight info;
         public Node neighbor;
+        public boolean tag;
 
-        public Arc(E info, Node neighbor) {
+        public Arc(Flight info, Node neighbor) {
             super();
             this.info = info;
             this.neighbor = neighbor;
@@ -93,12 +88,12 @@ public abstract class GraphAdjList<V, E> {
 
     }
 
-    private HashMap<V, Node> nodes;
+    private HashMap<Airport, Node> nodes;
 
     protected abstract boolean isDirected();
 
     public GraphAdjList() {
-        this.nodes = new HashMap<V, Node>();
+        this.nodes = new HashMap<Airport, Node>();
     }
 
     public boolean isEmpty() {
@@ -106,14 +101,14 @@ public abstract class GraphAdjList<V, E> {
     }
 
 
-    public void addVertex(V vertex) {
+    public void addVertex(Airport vertex) {
         if (!nodes.containsKey(vertex)) {
             nodes.put(vertex, new Node(vertex));
         }
     }
 
     //HECHA POR SEBAS, NO SE SI ESTA BIEN
-    public V getVertex(String vertex) {
+    public Airport getVertex(String vertex) {
         for(Node node : getNodes()) {
             if(node.info.toString().equals(vertex))
                 return node.info;
@@ -121,7 +116,7 @@ public abstract class GraphAdjList<V, E> {
         return null;
     }
 
-    public void addArc(V v, V w, E e) {
+    public void addArc(Airport v, Airport w, Flight e) {
         Node origin = nodes.get(v);
         Node dest = nodes.get(w);
         if (origin != null && dest != null && !origin.equals(dest)) {
@@ -136,7 +131,7 @@ public abstract class GraphAdjList<V, E> {
     }
 
     //HECHA POR SEBAS, NO SE SI ESTA BIEN
-    public E getArc(String arc) {
+    public Flight getArc(String arc) {
         for(Node node : getNodes()) {
             for(Arc adj : node.adj) {
                 if(adj.toString().equals(arc))
@@ -156,7 +151,7 @@ public abstract class GraphAdjList<V, E> {
     }
 
 
-    public void removeArc(V v, V w) {
+    public void removeArc(Airport v, Airport w) {
         Node origin = nodes.get(v);
         if (origin == null)
             return;
@@ -169,7 +164,7 @@ public abstract class GraphAdjList<V, E> {
     }
 
 
-    public E isArc(V v, V w) {
+    public Flight isArc(Airport v, Airport w) {
         Node origin = nodes.get(v);
         if (origin == null)
             return null;
@@ -183,7 +178,7 @@ public abstract class GraphAdjList<V, E> {
 
     }
 
-    public int outDegree(V v) {
+    public int outDegree(Airport v) {
         Node node = nodes.get(v);
         if (node != null) {
             return node.adj.size();
@@ -192,7 +187,7 @@ public abstract class GraphAdjList<V, E> {
     }
 
 
-    public int inDegree(V v) {
+    public int inDegree(Airport v) {
         if (!isDirected())
             return outDegree(v);
         int count = 0;
@@ -209,12 +204,12 @@ public abstract class GraphAdjList<V, E> {
     }
 
 
-    public List<V> neighbors(V v) {
+    public List<Airport> neighbors(Airport v) {
         Node node = nodes.get(v);
         if (node == null)
             return null;
 
-        List<V> l = new ArrayList<V>(node.adj.size());
+        List<Airport> l = new ArrayList<Airport>(node.adj.size());
         for (Arc e : node.adj) {
             l.add(e.neighbor.info);
         }
@@ -222,7 +217,7 @@ public abstract class GraphAdjList<V, E> {
     }
 
 
-    public void removeVertex(V v) {
+    public void removeVertex(Airport v) {
         Node node = nodes.get(v);
         if (node == null)
             return;
@@ -239,7 +234,7 @@ public abstract class GraphAdjList<V, E> {
     }
 
     public void removeAllVertex() {
-        Iterator<V> it = nodes.keySet().iterator();
+        Iterator<Airport> it = nodes.keySet().iterator();
         while(it.hasNext()) {
             nodes.remove(it.next());
         }
@@ -251,19 +246,19 @@ public abstract class GraphAdjList<V, E> {
 
     private List<Node> getNodes() {
         List<Node> l = new ArrayList<Node>(vertexCount());
-        Iterator<V> it = nodes.keySet().iterator();
+        Iterator<Airport> it = nodes.keySet().iterator();
         while (it.hasNext()) {
             l.add(nodes.get(it.next()));
         }
         return l;
     }
 
-    public List<V> DFS(V origin) {
+    public List<Airport> DFS(Airport origin) {
         Node node = nodes.get(origin);
         if (node == null)
             return null;
         clearMarks();
-        List<V> l = new ArrayList<V>();
+        List<Airport> l = new ArrayList<Airport>();
         this.DFS(node, l);
         return l;
     }
@@ -276,7 +271,7 @@ public abstract class GraphAdjList<V, E> {
     }
 
 
-    protected void DFS(Node origin, List<V> l) {
+    protected void DFS(Node origin, List<Airport> l) {
         if (origin.visited)
             return;
         l.add(origin.info);
@@ -286,12 +281,12 @@ public abstract class GraphAdjList<V, E> {
     }
 
 
-    public List<V> BFS(V origin) {
+    public List<Airport> BFS(Airport origin) {
         Node node = nodes.get(origin);
         if (node == null)
             return null;
         clearMarks();
-        List<V> l = new ArrayList<V>();
+        List<Airport> l = new ArrayList<Airport>();
 
         Queue<Node> q = new LinkedList<Node>();
         q.add(node);
@@ -315,7 +310,7 @@ public abstract class GraphAdjList<V, E> {
         }
         clearMarks();
         List<Node> l = getNodes();
-        List<V> laux = new ArrayList<V>();
+        List<Airport> laux = new ArrayList<Airport>();
         DFS(l.get(0), laux);
         for (Node node : l) {
             if (!node.visited) {
@@ -331,7 +326,7 @@ public abstract class GraphAdjList<V, E> {
         Node node;
         while ((node = unvisited()) != null) {
             count++;
-            DFS(node, new ArrayList<V>());
+            DFS(node, new ArrayList<Airport>());
         }
         return count;
     }
@@ -343,5 +338,41 @@ public abstract class GraphAdjList<V, E> {
         }
         return null;
     }
+/*
+    private Class PQNode{
+        Node node;
+        Flight flight;
+
+
+    }
+
+    public double minDistance(String from, String to, Comparator<Flight> cmp,ArrayList<String> days){
+        Node f 	=	nodes.get(from);
+        Node t 	=	nodes.get(to);
+        //if((f == null)||(t == null)) throw new MyExeption();
+        clearMarks();	//	Luego voy a marcar los nodos que ya use para no llegar la lista en loop
+        //tendria que cambiar el codigo para q acepte comparators
+        PriorityQueue<Node> pq = new PriorityQueue<>(new Comparator<Node>() {
+            @Override
+            public int compare(Node node, Node t1) {
+                return cmp.compare(node.info,t1.info);
+            }
+        });
+        pq.offer(new PQNode(f,o));
+        PQNode aux;
+
+
+        while(!pq.isEmpty()){
+            PQNode<T> aux = pq.poll();
+            if(aux.n == t)	return aux.d;
+            if(!aux.n.visited){
+                aux.n.visited = true;	//Si o si hay que marcarlo cuando lo saco.
+                for(Arc	arc:	aux.n.adj){
+                    if(!arc.to.visited)	pq.offer(new PQNode(arc.to,aux.d + arc.weigth));
+                }
+            }
+        }
+    }
+    */
 
 }
