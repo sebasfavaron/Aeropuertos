@@ -363,7 +363,7 @@ public abstract class GraphAdjList{
         }
     }
 
-    /*public ArrayList<Flight> minDistance(String from, String to,GetValue getValue,ArrayList<String> days){
+    public ArrayList<Flight> minDistance(String from, String to,GetValue getValue,ArrayList<String> days){
         Node f 	=	nodes.get(from);
         Node t 	=	nodes.get(to);
         //if((f == null)||(t == null)) throw new MyExeption();
@@ -375,7 +375,11 @@ public abstract class GraphAdjList{
                 return (int)(node.value-t1.value);
             }
         });
-        pq.offer(new PQNode(f, (double) 0));
+        for (Arc arc : f.adj) {
+            if(days.contains(arc.info.getWeekDay())) {
+                pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info)));
+            }
+        }
         //PQNode aux;
         //Stack<Flight> itinerary=new Stack();
 
@@ -389,6 +393,6 @@ public abstract class GraphAdjList{
                 }
             }
         }
-        return ;
-    }*/
+        return new ArrayList<>();
+    }
 }
