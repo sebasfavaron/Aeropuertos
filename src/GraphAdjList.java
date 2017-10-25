@@ -338,41 +338,57 @@ public abstract class GraphAdjList{
         }
         return null;
     }
-/*
-    private Class PQNode{
+
+    public class PQNode{
         Node node;
-        Flight flight;
-
-
+        ArrayList<Flight> itinerary;
+        Double value;
+        public PQNode(Node node, Double value,Flight flight){
+            this.node=node;
+            this.value=value;
+            itinerary=new ArrayList<>();
+            itinerary.add(flight);
+        }
+        public PQNode(Node node, Double value){
+            this.node=node;
+            this.value=value;
+            itinerary=new ArrayList<>();
+            //itinerary.push(flight);
+        }
+        public PQNode(Node node, Double value,ArrayList<Flight> stack,Flight flight){
+            this.node=node;
+            this.value=value;
+            itinerary=new ArrayList<>(stack);
+            itinerary.add(flight);
+        }
     }
 
-    public double minDistance(String from, String to, Comparator<Flight> cmp,ArrayList<String> days){
+    /*public ArrayList<Flight> minDistance(String from, String to,GetValue getValue,ArrayList<String> days){
         Node f 	=	nodes.get(from);
         Node t 	=	nodes.get(to);
         //if((f == null)||(t == null)) throw new MyExeption();
         clearMarks();	//	Luego voy a marcar los nodos que ya use para no llegar la lista en loop
         //tendria que cambiar el codigo para q acepte comparators
-        PriorityQueue<Node> pq = new PriorityQueue<>(new Comparator<Node>() {
+        PriorityQueue<PQNode> pq = new PriorityQueue<>(new Comparator<PQNode>() {
             @Override
-            public int compare(Node node, Node t1) {
-                return cmp.compare(node.info,t1.info);
+            public int compare(PQNode node, PQNode t1) {
+                return (int)(node.value-t1.value);
             }
         });
-        pq.offer(new PQNode(f,o));
-        PQNode aux;
-
+        pq.offer(new PQNode(f, (double) 0));
+        //PQNode aux;
+        //Stack<Flight> itinerary=new Stack();
 
         while(!pq.isEmpty()){
-            PQNode<T> aux = pq.poll();
-            if(aux.n == t)	return aux.d;
-            if(!aux.n.visited){
-                aux.n.visited = true;	//Si o si hay que marcarlo cuando lo saco.
-                for(Arc	arc:	aux.n.adj){
-                    if(!arc.to.visited)	pq.offer(new PQNode(arc.to,aux.d + arc.weigth));
+            PQNode aux = pq.poll();
+            if(aux.node == t)	return aux.itinerary;
+            if(!aux.node.visited){
+                aux.node.visited = true;	//Si o si hay que marcarlo cuando lo saco.
+                for(Arc	arc:	aux.node.adj){
+                    if(!arc.neighbor.visited)	pq.offer(new PQNode(arc.neighbor,aux.value + getValue.get(arc.info),aux.itinerary,arc.info));
                 }
             }
         }
-    }
-    */
-
+        return ;
+    }*/
 }

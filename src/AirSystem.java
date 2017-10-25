@@ -5,7 +5,7 @@ import java.util.*;
 
 public class AirSystem {
 
-    private GraphAdjList<Airport,Flight> airports;
+    private GraphAdjList airports;
 
     public List<Flight> compareByPrice(List<String> days){
 
