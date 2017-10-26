@@ -374,6 +374,29 @@ public abstract class GraphAdjList{
             }
         },days);
     }
+    public ArrayList<Flight> minFt(String from,String to,List<String> days){
+        return minDistance(from, to, new GetValue() {
+            @Override
+            public double get(Flight f1, Flight f2) {
+                return f1.getDuration();
+            }
+        },days);
+    }
+    public ArrayList<Flight> minTt(String from,String to,List<String> days){
+        return minDistance(from, to, new GetValue() {
+            @Override
+            public double get(Flight f1, Flight f2) {
+                /*if (f2==null) {
+                    return f1.getDuration();
+                }
+                //else {
+                    //return f1.getDuration()+f2.getDepartureTime();
+                //}
+                */
+                return 0;
+            }
+        },days);
+    }
 
     public ArrayList<Flight> minTime(String from, String to, List<String> days) {
         return minDistance(from, to, new GetValue() {
