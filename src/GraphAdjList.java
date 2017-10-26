@@ -377,7 +377,7 @@ public abstract class GraphAdjList{
         });
         for (Arc arc : f.adj) {
             if(days.contains(arc.info.getWeekDay())) {
-                pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info)));
+                pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info),arc.info));
             }
         }
         //PQNode aux;
