@@ -367,6 +367,14 @@ public abstract class GraphAdjList{
             itinerary.add(flight);
         }
     }
+    public ArrayList<Flight> minPrice(String from,String to,List<String> days){
+        return minDistance(from, to, new GetValue() {
+            @Override
+            public double get(Flight f1, Flight f2) {
+                return f1.getPrice();
+            }
+        },days);
+    }
 
     public ArrayList<Flight> minDistance(String from, String to, GetValue getValue, List<String> days){
         Node f = null, t = null;
@@ -400,7 +408,7 @@ public abstract class GraphAdjList{
             boolean added = false;
             for(String day : arc.info.getWeekDay())
                 if(!added && days.contains(day)&&arc.info.getDeparture().getName().equals(f.info.getName())) {
-                    pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info), arc.info));
+                    pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info,null), arc.info));
                     added = true;
                 }
         }
@@ -414,7 +422,7 @@ public abstract class GraphAdjList{
                 aux.node.visited = true;	//Si o si hay que marcarlo cuando lo saco.
                 for(Arc	arc : aux.node.adj) {
                     if(!arc.neighbor.visited&&arc.info.getDeparture().getName().equals(aux.node.info.getName()))
-                        pq.offer(new PQNode(arc.neighbor,aux.value + getValue.get(arc.info),aux.itinerary,arc.info));
+                        pq.offer(new PQNode(arc.neighbor,aux.value + getValue.get(arc.info,aux.itinerary.get(aux.itinerary.size()-1)),aux.itinerary,arc.info));
                 }
             }
         }

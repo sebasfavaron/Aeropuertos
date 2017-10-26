@@ -37,12 +37,7 @@ public class Main {
         airSystem.addFlight("AA", 7232, l, "AUS", "USA", new Time(10), 10., 20.);
         airSystem.addFlight("AA", 8232, l, "USA", "ARG", new Time(10), 10., 20.);
         airSystem.addFlight("AA", 9232, l, "AUS", "ARG", new Time(10), 10., 20.);
-        ArrayList<Flight> res = airSystem.getAirports().minDistance("ARG", "FRA", new GetValue() {
-            @Override
-            public double get(Flight flight) {
-                return flight.getPrice();
-            }
-        }, l);
+        ArrayList<Flight> res = airSystem.getAirports().minPrice("ARG", "FRA", l);
         System.out.println(res);
     }
 
