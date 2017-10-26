@@ -10,8 +10,7 @@ public class Main {
         Main.paramsManager(args);
     }
     private static void paramsManager(String[] args) {
-        Main m = new Main();
-        m.printHelp();
+        printHelp();
         AirSystem airSystem = new AirSystem();
         airSystem.addAirport("ARG", 12., 12.);
         airSystem.addAirport("FRA", 13., 13.);
@@ -38,7 +37,7 @@ public class Main {
         System.out.println(res);
     }
 
-    private void printHelp() {
+    private static void printHelp() {
         System.out.println("List of commands:\n   " +
                 "insert airport [name] [lat] [lng]\n   " +
                 "delete airport [name]\n   " +
