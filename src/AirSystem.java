@@ -7,6 +7,15 @@ public class AirSystem {
 
     private GraphAdjList airports;
 
+    public AirSystem() {
+        airports = new GraphAdjList() {
+            @Override
+            protected boolean isDirected() {
+                return false;
+            }
+        };
+    }
+
     public List<Flight> compareByPrice(List<String> days){
 
         Comparator<Flight> cost=new Comparator<Flight>() {
@@ -15,7 +24,7 @@ public class AirSystem {
                 return (int)(flight.getPrice()-t1.getPrice());
             }
         };
-        // pasarle a una funcion del grafo que busque con nuestro comparador y que checke el dia
+        // pasarle a una funcion del grafo que busque con nuestro comparador y que checkee el dia
         return new ArrayList<Flight>();
     }
 
@@ -35,5 +44,9 @@ public class AirSystem {
 
     public void deleteAllAirports() {
         airports.removeAllVertex();
+    }
+
+    public GraphAdjList getAirports() {
+        return airports;
     }
 }

@@ -1,5 +1,9 @@
 package src;
 
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Sebas on 10/24/17.
  */
@@ -12,6 +16,25 @@ public class Main {
         Main m = new Main();
         m.printHelp();
         AirSystem airSystem = new AirSystem();
+        airSystem.addAirport("BUE", 12., 12.);
+        airSystem.addAirport("FRA", 13., 13.);
+        airSystem.addAirport("ENG", 15., 15.);
+        List<String> l = new ArrayList<>();
+        l.add("Lun");
+        l.add("Mar");
+        l.add("Mie");
+        l.add("Jue");
+        l.add("Vie");
+        airSystem.addFlight("AA", 1234, l, "BUE", "FRA", new Time(12), 2., 200.);
+        airSystem.addFlight("AA", 2231, l, "FRA", "ENG", new Time(11), 22., 20.);
+        airSystem.addFlight("AA", 3232, l, "ENG", "BUE", new Time(10), 10., 2.);
+        ArrayList<Flight> res = airSystem.getAirports().minDistance("BUE", "FRA", new GetValue() {
+            @Override
+            public double get(Flight flight) {
+                return flight.getPrice();
+            }
+        },l);
+        System.out.println(res);
     }
     private void printHelp() {
         System.out.println("List of commands:\n   " +
