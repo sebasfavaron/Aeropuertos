@@ -4,9 +4,6 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Sebas on 10/24/17.
- */
 public class Main {
     public static void main(String[] args) {
         //lo meto en un metodo asi podemos try-catchear la cosa entera

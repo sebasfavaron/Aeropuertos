@@ -4,9 +4,8 @@ import java.util.*;
 
 /**
  *
- * Clase abstracta para Grafos (no multigrafos). No soporta multigrafos ni lazos
+ * Clase para Grafos con nodos Aeropuertos y aristas Vuelos. No soporta multigrafos ni lazos
  *
-
  */
 public abstract class GraphAdjList{
 
@@ -367,7 +366,7 @@ public abstract class GraphAdjList{
             itinerary.add(flight);
         }
     }
-    public ArrayList<Flight> minPrice(String from,String to,List<String> days){
+    public ArrayList<Flight> minPrice(String from, String to, List<String> days){
         return minDistance(from, to, new GetValue() {
             @Override
             public double get(Flight f1, Flight f2) {
@@ -376,7 +375,16 @@ public abstract class GraphAdjList{
         },days);
     }
 
-    public ArrayList<Flight> minDistance(String from, String to, GetValue getValue, List<String> days){
+    public ArrayList<Flight> minTime(String from, String to, List<String> days) {
+        return minDistance(from, to, new GetValue() {
+            @Override
+            public double get(Flight f1, Flight f2) {
+                return f1.getDuration();
+            }
+        }, days);
+    }
+
+    private ArrayList<Flight> minDistance(String from, String to, GetValue getValue, List<String> days){
         Node f = null, t = null;
         for(Airport a : nodes.keySet()) {
             if(a.getName().equals(from))
