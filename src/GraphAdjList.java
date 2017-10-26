@@ -377,7 +377,9 @@ public abstract class GraphAdjList{
         });
         for (Arc arc : f.adj) {
             if(days.contains(arc.info.getWeekDay())) {
-                pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info),arc.info));
+                if (arc.info.getDeparture().getName()==f.info.getName()) {
+                    pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info), arc.info));
+                }
             }
         }
         //PQNode aux;
@@ -389,7 +391,11 @@ public abstract class GraphAdjList{
             if(!aux.node.visited){
                 aux.node.visited = true;	//Si o si hay que marcarlo cuando lo saco.
                 for(Arc	arc:	aux.node.adj){
-                    if(!arc.neighbor.visited)	pq.offer(new PQNode(arc.neighbor,aux.value + getValue.get(arc.info),aux.itinerary,arc.info));
+                    if (arc.info.getDeparture().getName().equals(aux.node.info.getName())) {
+                        if (!arc.neighbor.visited) {
+                            pq.offer(new PQNode(arc.neighbor, aux.value + getValue.get(arc.info), aux.itinerary, arc.info));
+                        }
+                    }
                 }
             }
         }
