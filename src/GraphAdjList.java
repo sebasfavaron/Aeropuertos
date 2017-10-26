@@ -363,33 +363,53 @@ public abstract class GraphAdjList{
         }
     }
 
-    public ArrayList<Flight> minDistance(String from, String to,GetValue getValue,ArrayList<String> days){
-        Node f 	=	nodes.get(from);
-        Node t 	=	nodes.get(to);
-        //if((f == null)||(t == null)) throw new MyExeption();
+    public ArrayList<Flight> minDistance(String from, String to, GetValue getValue, List<String> days){
+        Node f = null, t = null;
+        for(Airport a : nodes.keySet()) {
+            if(a.getName().equals(from))
+                f = nodes.get(a);
+            if(a.getName().equals(to))
+                t = nodes.get(a);
+
+        }
+        if(f == null||t == null) {
+            //throw new MyException();
+            return null;
+        }
         clearMarks();	//	Luego voy a marcar los nodos que ya use para no llegar la lista en loop
         //tendria que cambiar el codigo para q acepte comparators
         PriorityQueue<PQNode> pq = new PriorityQueue<>(new Comparator<PQNode>() {
             @Override
             public int compare(PQNode node, PQNode t1) {
-                return (int)(node.value-t1.value);
+                double diff = node.value-t1.value;
+                if(diff == 0)
+                    return 0;
+                else if(diff > 0)
+                    return 1;
+                else
+                    return -1;
+                //la cambie para que, por ej, 11.1 sea mayor a 11.0. Sino con '(int)' retornaba 0
             }
         });
         for (Arc arc : f.adj) {
-            if(days.contains(arc.info.getWeekDay())) {
-                pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info),arc.info));
-            }
+            boolean added = false;
+            for(String day : arc.info.getWeekDay())
+                if(!added && days.contains(day)) {
+                    pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info), arc.info));
+                    added = true;
+                }
         }
         //PQNode aux;
         //Stack<Flight> itinerary=new Stack();
 
-        while(!pq.isEmpty()){
+        while(!pq.isEmpty()) {
             PQNode aux = pq.poll();
             if(aux.node == t)	return aux.itinerary;
-            if(!aux.node.visited){
+            if(!aux.node.visited) {
                 aux.node.visited = true;	//Si o si hay que marcarlo cuando lo saco.
-                for(Arc	arc:	aux.node.adj){
-                    if(!arc.neighbor.visited)	pq.offer(new PQNode(arc.neighbor,aux.value + getValue.get(arc.info),aux.itinerary,arc.info));
+                for(Arc	arc : aux.node.adj) {
+                    if(!arc.neighbor.visited)
+                        pq.offer(new PQNode(arc.neighbor,aux.value + getValue.get(arc.info),aux.itinerary,arc.info));
                 }
             }
         }
