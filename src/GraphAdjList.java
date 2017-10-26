@@ -368,7 +368,7 @@ public abstract class GraphAdjList{
         return minDistance(from, to, new GetValue() {
             @Override
             public double get(Flight prevFlight, Flight nextFlight) {
-                return nextFlight.getPrice();
+                return prevFlight.getPrice();
             }
         },days);
     }
@@ -376,7 +376,7 @@ public abstract class GraphAdjList{
         return minDistance(from, to, new GetValue() {
             @Override
             public double get(Flight prevFlight, Flight nextFlight) {
-                return nextFlight.getDuration();
+                return prevFlight.getDuration();
             }
         },days);
     }
