@@ -24,17 +24,21 @@ public class Main {
         l.add("Mie");
         l.add("Jue");
         l.add("Vie");
-        airSystem.addFlight("AA", 1234, l, "ARG", "FRA", new src.Time(10,12), 2., 60.);
+        airSystem.addFlight("AA", 1234, l, "ARG", "FRA", new src.Time(10,12), new src.Time(2,0), 60.);
         airSystem.deleteFlight("AA#1234");
-        airSystem.addFlight("AA", 2232, l, "ARG", "USA", new src.Time(10,12), 10., 20.);
-        airSystem.addFlight("AA", 3232, l, "USA", "ENG", new src.Time(10,12), 10., 20.);
-        airSystem.addFlight("AA", 4231, l, "ENG", "FRA", new src.Time(10,12), 22., 20.);
-        airSystem.addFlight("AA", 5231, l, "FRA", "ENG", new src.Time(10,12), 22., 20.);
-        airSystem.addFlight("AA", 6232, l, "ENG", "ARG", new src.Time(10,12), 10., 20.);
-        airSystem.addFlight("AA", 7232, l, "AUS", "USA", new src.Time(10,12), 10., 20.);
-        airSystem.addFlight("AA", 8232, l, "USA", "ARG", new src.Time(10,12), 10., 20.);
-        airSystem.addFlight("AA", 9232, l, "AUS", "ARG", new src.Time(10,12), 10., 20.);
+        airSystem.addFlight("AA", 2232, l, "ARG", "USA", new src.Time(10,12), new src.Time(10,0), 20.);
+        airSystem.addFlight("AA", 3232, l, "USA", "ENG", new src.Time(10,12), new src.Time(10,0), 20.);
+        airSystem.addFlight("AA", 4231, l, "ENG", "FRA", new src.Time(10,12), new src.Time(22,0), 20.);
+        airSystem.addFlight("AA", 5231, l, "FRA", "ENG", new src.Time(10,12), new src.Time(22,0), 20.);
+        airSystem.addFlight("AA", 6232, l, "ENG", "ARG", new src.Time(10,12), new src.Time(10,0), 20.);
+        airSystem.addFlight("AA", 7232, l, "AUS", "USA", new src.Time(10,12), new src.Time(10,0), 20.);
+        airSystem.addFlight("AA", 8232, l, "USA", "ARG", new src.Time(10,12), new src.Time(10,0), 20.);
+        airSystem.addFlight("AA", 9232, l, "AUS", "ARG", new src.Time(10,12), new src.Time(10,0), 20.);
         ArrayList<Flight> res = airSystem.getAirports().minPrice("ARG", "FRA", l);
+        System.out.println(res);
+        res = airSystem.getAirports().minFt("ARG", "FRA", l);
+        System.out.println(res);
+        res = airSystem.getAirports().minTt("ARG", "FRA", l);
         System.out.println(res);
     }
 

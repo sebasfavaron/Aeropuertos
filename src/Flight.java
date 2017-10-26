@@ -10,10 +10,10 @@ public class Flight {
     private Airport departure;
     private Airport arrival;
     private src.Time departureTime;
-    private Double duration;
+    private src.Time duration;
     private Double price;
 
-    public Flight(String airline, Integer number, List<String> weekDay, Airport departure, Airport arrival, src.Time departureTime, Double duration, Double price) {
+    public Flight(String airline, Integer number, List<String> weekDay, Airport departure, Airport arrival, src.Time departureTime, src.Time duration, Double price) {
         this.airline = airline;
         this.number = number;
         this.weekDay = weekDay;
@@ -72,11 +72,11 @@ public class Flight {
         this.departureTime = departureTime;
     }
 
-    public Double getDuration() {
+    public src.Time getDuration() {
         return duration;
     }
 
-    public void setDuration(Double duration) {
+    public void setDuration(src.Time duration) {
         this.duration = duration;
     }
 

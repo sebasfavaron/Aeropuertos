@@ -379,26 +379,69 @@ public abstract class GraphAdjList{
         return minDistance(from, to, new GetValue() {
             @Override
             public double get(Flight prevFlight, Flight nextFlight) {
-                return prevFlight.getDuration();
+                return prevFlight.getDuration().getHour()*60+prevFlight.getDuration().getMinute();
             }
         },days);
     }
     public ArrayList<Flight> minTt(String from,String to,List<String> days){
-        return minDistance(from, to, new GetValue() {
+        Node f = null, t = null;
+        for(Airport a : nodes.keySet()) {
+            if(a.getName().equals(from))
+                f = nodes.get(a);
+            if(a.getName().equals(to))
+                t = nodes.get(a);
+
+        }
+        if(f == null||t == null) {
+            //throw new MyException();
+            return null;
+        }
+        clearMarks();	//	Luego voy a marcar los nodos que ya use para no llegar la lista en loop
+        //tendria que cambiar el codigo para q acepte comparators
+        PriorityQueue<PQNode> pq = new PriorityQueue<>(new Comparator<PQNode>() {
             @Override
-            public double get(Flight prevFlight, Flight nextFlight) {
-                /*if (nextFlight==null) {
-                    return nextFlight.getDuration();
-                }
-                //else {
-                    //return prevFlight.getDuration()+nextFlight.getDepartureTime();
-                //}
-                */
-                //falta definir bien el waitingTime
-                double waitingTime = 0;
-                return nextFlight.getDuration() + waitingTime;
+            public int compare(PQNode node, PQNode t1) {
+                //la cambie para que, por ej, 11.1 sea mayor a 11.0. Sino con '(int)' retornaba 0
+                double diff = node.value-t1.value;
+                if(diff == 0)
+                    return 0;
+                else if(diff > 0)
+                    return 1;
+                else
+                    return -1;
             }
-        },days);
+        });
+        for (Arc arc : f.adj) {
+            boolean added = false;
+            for(String day : arc.info.getWeekDay())
+                if(!added && days.contains(day) && arc.info.getDeparture().getName().equals(f.info.getName())) {
+                    src.Time time = new Time(parseDay(day), arc.info.getDepartureTime().getHour(), arc.info.getDepartureTime().getMinute());
+                    src.Time auxtime = new Time(parseDay(day),arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(),arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute());
+                    pq.offer(new PQNode(arc.neighbor,(double) auxtime.getVal(), arc.info, auxtime));
+                    added = true;
+                }
+        }
+        //PQNode aux;
+        //Stack<Flight> itinerary=new Stack();
+
+        while(!pq.isEmpty()) {
+            PQNode aux = pq.poll();
+            if(aux.node == t)
+                return aux.itinerary;
+            if(!aux.node.visited) {
+                aux.node.visited = true;	//Si o si hay que marcarlo cuando lo saco.
+                for(Arc	arc : aux.node.adj) {
+                    if(!arc.neighbor.visited && arc.info.getDeparture().getName().equals(aux.node.info.getName())) {
+                        Flight prevFlight = aux.itinerary.get(aux.itinerary.size() - 1);
+                        for (String day:arc.info.getWeekDay()) {
+                            src.Time auxtime = new Time(parseDay(day),arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(), arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute());
+                            pq.offer(new PQNode(arc.neighbor, aux.value +(double) auxtime.difference(aux.time), aux.itinerary, arc.info, new Time(parseDay(day), arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(), arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute())));
+                        }
+                    }
+                }
+            }
+        }
+        return new ArrayList<>();
     }
 
     private ArrayList<Flight> minDistance(String from, String to, GetValue getValue, List<String> days){
@@ -450,7 +493,9 @@ public abstract class GraphAdjList{
                 for(Arc	arc : aux.node.adj) {
                     if(!arc.neighbor.visited && arc.info.getDeparture().getName().equals(aux.node.info.getName())) {
                         Flight prevFlight = aux.itinerary.get(aux.itinerary.size() - 1);
-                        pq.offer(new PQNode(arc.neighbor, aux.value + getValue.get(prevFlight, arc.info), aux.itinerary, arc.info, new Time(0,0,0)));
+                        for (String day:arc.info.getWeekDay()) {
+                            pq.offer(new PQNode(arc.neighbor, aux.value + getValue.get(prevFlight, arc.info), aux.itinerary, arc.info, new Time(parseDay(day), arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(), arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute())));
+                        }
                     }
                 }
             }
