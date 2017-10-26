@@ -42,6 +42,19 @@ public class AirSystem {
         airports.addArc(departure, arrival, new Flight(airline, flightNumber, weekDays, departure, arrival, departTime, duration, price));
     }
 
+    public void deleteFlight(String name) {
+        try {
+            Flight f = airports.getArc(name);
+            airports.removeArc(f.getDeparture(), f.getArrival());
+        } catch (NullPointerException e) {
+            System.out.println(name + " is not a flight name. No flight was deleted");
+        }
+    }
+
+    public void deleteAllFlights() {
+        airports.removeAllArc();
+    }
+
     public void deleteAirport(String airportName) {
         airports.removeVertex(airports.getVertex(airportName));
     }

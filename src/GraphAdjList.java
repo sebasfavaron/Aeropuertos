@@ -130,10 +130,10 @@ public abstract class GraphAdjList{
     }
 
     //HECHA POR SEBAS, NO SE SI ESTA BIEN
-    public Flight getArc(String arc) {
+    public Flight getArc(String flightName) {
         for(Node node : getNodes()) {
             for(Arc adj : node.adj) {
-                if(adj.toString().equals(arc))
+                if(adj.info.toString().equals(flightName))
                     return adj.info;
             }
         }
@@ -162,6 +162,12 @@ public abstract class GraphAdjList{
             dest.adj.remove(new Arc(null, origin));
     }
 
+    public void removeAllArc() {
+        for(Node node : nodes.values()) {
+            //piso todas las listas de Arc's, borrando asi las aristas entre aeropuertos
+            node.adj = new ArrayList<>();
+        }
+    }
 
     public Flight isArc(Airport v, Airport w) {
         Node origin = nodes.get(v);
@@ -342,7 +348,7 @@ public abstract class GraphAdjList{
         Node node;
         ArrayList<Flight> itinerary;
         Double value;
-        public PQNode(Node node, Double value,Flight flight){
+        public PQNode(Node node, Double value, Flight flight){
             this.node=node;
             this.value=value;
             itinerary=new ArrayList<>();
