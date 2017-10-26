@@ -346,20 +346,23 @@ public abstract class GraphAdjList{
     public class PQNode{
         Node node;
         Double value;
+        src.Time time;
         ArrayList<Flight> itinerary;
-        public PQNode(Node node, Double value){
+        public PQNode(Node node, Double value, src.Time time){
             this.node=node;
             this.value=value;
+            this.time = time;
             itinerary=new ArrayList<>();
             //itinerary.push(flight);
         }
-        public PQNode(Node node, Double value, Flight flight){
-            this(node, value);
+        public PQNode(Node node, Double value, Flight flight, src.Time time){
+            this(node, value, time);
             itinerary.add(flight);
         }
-        public PQNode(Node node, Double value,ArrayList<Flight> stack,Flight flight){
+        public PQNode(Node node, Double value, ArrayList<Flight> stack, Flight flight, src.Time time){
             this.node=node;
             this.value=value;
+            this.time = time;
             itinerary=new ArrayList<>(stack);
             itinerary.add(flight);
         }
@@ -391,8 +394,8 @@ public abstract class GraphAdjList{
                     //return prevFlight.getDuration()+nextFlight.getDepartureTime();
                 //}
                 */
-                //falta definir bien el waitingTime. Asi como esta esta mal
-                double waitingTime = nextFlight.getDepartureTime().getTime() - prevFlight.getDepartureTime().getTime() + prevFlight.getDuration();
+                //falta definir bien el waitingTime
+                double waitingTime = 0;
                 return nextFlight.getDuration() + waitingTime;
             }
         },days);
@@ -430,7 +433,8 @@ public abstract class GraphAdjList{
             boolean added = false;
             for(String day : arc.info.getWeekDay())
                 if(!added && days.contains(day) && arc.info.getDeparture().getName().equals(f.info.getName())) {
-                    pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info,null), arc.info));
+                    src.Time time = new Time(parseDay(day), arc.info.getDepartureTime().getHour(), arc.info.getDepartureTime().getMinute());
+                    pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info,null), arc.info, time));
                     added = true;
                 }
         }
@@ -444,11 +448,26 @@ public abstract class GraphAdjList{
             if(!aux.node.visited) {
                 aux.node.visited = true;	//Si o si hay que marcarlo cuando lo saco.
                 for(Arc	arc : aux.node.adj) {
-                    if(!arc.neighbor.visited && arc.info.getDeparture().getName().equals(aux.node.info.getName()))
-                        pq.offer(new PQNode(arc.neighbor,aux.value + getValue.get(aux.itinerary.get(aux.itinerary.size()-1), arc.info), aux.itinerary, arc.info));
+                    if(!arc.neighbor.visited && arc.info.getDeparture().getName().equals(aux.node.info.getName())) {
+                        Flight prevFlight = aux.itinerary.get(aux.itinerary.size() - 1);
+                        pq.offer(new PQNode(arc.neighbor, aux.value + getValue.get(prevFlight, arc.info), aux.itinerary, arc.info, new Time(0,0,0)));
+                    }
                 }
             }
         }
         return new ArrayList<>();
+    }
+
+    private int parseDay(String day) {
+        switch (day) {
+            case "Lun": return 0;
+            case "Mar": return 1;
+            case "Mie": return 2;
+            case "Jue": return 3;
+            case "Vie": return 4;
+            case "Sab": return 5;
+            case "Dom": return 6;
+        }
+        throw new IllegalArgumentException();
     }
 }

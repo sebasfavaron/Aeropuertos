@@ -9,11 +9,11 @@ public class Flight {
     private List<String> weekDay;
     private Airport departure;
     private Airport arrival;
-    private Time departureTime;
+    private src.Time departureTime;
     private Double duration;
     private Double price;
 
-    public Flight(String airline, Integer number, List<String> weekDay, Airport departure, Airport arrival, Time departureTime, Double duration, Double price) {
+    public Flight(String airline, Integer number, List<String> weekDay, Airport departure, Airport arrival, src.Time departureTime, Double duration, Double price) {
         this.airline = airline;
         this.number = number;
         this.weekDay = weekDay;
@@ -64,11 +64,11 @@ public class Flight {
         this.arrival = arrival;
     }
 
-    public Time getDepartureTime() {
+    public src.Time getDepartureTime() {
         return departureTime;
     }
 
-    public void setDepartureTime(Time departureTime) {
+    public void setDepartureTime(src.Time departureTime) {
         this.departureTime = departureTime;
     }
 

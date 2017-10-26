@@ -32,7 +32,7 @@ public class AirSystem {
         airports.addVertex(new Airport(airportName, lat, lng));
     }
 
-    public void addFlight(String airline, Integer flightNumber, List<String> weekDays, String origin, String destination, Time departTime, Double duration, Double price) {
+    public void addFlight(String airline, Integer flightNumber, List<String> weekDays, String origin, String destination, src.Time departTime, Double duration, Double price) {
         Airport departure = airports.getVertex(origin);
         Airport arrival = airports.getVertex(destination);
         if(departure == null||arrival == null) {
