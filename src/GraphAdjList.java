@@ -62,8 +62,7 @@ public abstract class GraphAdjList{
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result
-                    + ((neighbor == null) ? 0 : neighbor.hashCode());
+            result = prime * result + ((neighbor == null) ? 0 : neighbor.hashCode());
             return result;
         }
 

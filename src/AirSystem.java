@@ -35,6 +35,10 @@ public class AirSystem {
     public void addFlight(String airline, Integer flightNumber, List<String> weekDays, String origin, String destination, Time departTime, Double duration, Double price) {
         Airport departure = airports.getVertex(origin);
         Airport arrival = airports.getVertex(destination);
+        if(departure == null||arrival == null) {
+            System.out.println("no es 'nullPointerException' exactamente, pero bue");
+            throw new NullPointerException();
+        }
         airports.addArc(departure, arrival, new Flight(airline, flightNumber, weekDays, departure, arrival, departTime, duration, price));
     }
 
