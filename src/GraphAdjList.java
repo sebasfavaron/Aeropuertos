@@ -394,7 +394,7 @@ public abstract class GraphAdjList{
         for (Arc arc : f.adj) {
             boolean added = false;
             for(String day : arc.info.getWeekDay())
-                if(!added && days.contains(day)) {
+                if(!added && days.contains(day)&&arc.info.getDeparture().getName().equals(f.info.getName())) {
                     pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info), arc.info));
                     added = true;
                 }
@@ -408,7 +408,7 @@ public abstract class GraphAdjList{
             if(!aux.node.visited) {
                 aux.node.visited = true;	//Si o si hay que marcarlo cuando lo saco.
                 for(Arc	arc : aux.node.adj) {
-                    if(!arc.neighbor.visited)
+                    if(!arc.neighbor.visited&&arc.info.getDeparture().getName().equals(aux.node.info.getName()))
                         pq.offer(new PQNode(arc.neighbor,aux.value + getValue.get(arc.info),aux.itinerary,arc.info));
                 }
             }
