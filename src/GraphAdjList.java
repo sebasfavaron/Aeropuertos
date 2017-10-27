@@ -383,7 +383,7 @@ public abstract class GraphAdjList{
             }
         },days);
     }
-    public ArrayList<Flight> minTt(String from,String to,List<String> days){
+    public ArrayList<Flight> minTt(String from, String to, List<String> days){
         Node f = null, t = null;
         for(Airport a : nodes.keySet()) {
             if(a.getName().equals(from))

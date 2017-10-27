@@ -8,22 +8,25 @@ public class Time {
     private int hour;
     private int minute;
     public Time(int hour, int minute) {
+        while (minute > 60){
+            minute -= 60;
+            hour += 1;
+        }
         this.hour = hour;
         this.minute = minute;
     }
     public Time(int weekDay, int hour, int minute) {
-        if (minute>60){
-            minute-=60;
-            hour+=1;
+        while (minute > 60){
+            minute -= 60;
+            hour += 1;
         }
-        if (hour>24){
-            hour-=24;
-            if (weekDay<6){
-                weekDay+=1;
-            }else{
-                weekDay=0;
-            }
+        while (hour > 24){
+            hour -= 24;
+            if (weekDay < 6)
+                weekDay += 1;
         }
+        if(weekDay > 6)
+            weekDay = weekDay % 7;
         this.weekDay = weekDay;
         this.hour = hour;
         this.minute = minute;
@@ -49,7 +52,7 @@ public class Time {
     /**
      * Calculates the time difference in minutes
      * @param other
-     * @return time difference in minutes. Negative if other comes after this (this - other)
+     * @return time difference in minutes
      */
     public int difference(Time other) {
         int dDay = weekDay - other.weekDay;
@@ -60,6 +63,7 @@ public class Time {
         }
         return dDay * 24 * 60 + dHour * 60 + dMinute;
     }
+
     public int getVal(){
         return weekDay * 24 * 60 + hour * 60 + minute;
     }
