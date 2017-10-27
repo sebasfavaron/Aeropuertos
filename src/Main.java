@@ -4,6 +4,8 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collector;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,9 +13,8 @@ public class Main {
         Main.paramsManager(args);
     }
     private static void paramsManager(String[] args) {
-        printHelp();
-        AirSystem airSystem = new AirSystem();
-        airSystem.addAirport("ARG", 12., 12.);
+
+        /*airSystem.addAirport("ARG", 12., 12.);
         airSystem.addAirport("FRA", 13., 13.);
         airSystem.addAirport("ENG", 15., 15.);
         airSystem.addAirport("AUS", 15., 15.);
@@ -39,7 +40,378 @@ public class Main {
         res = airSystem.getAirports().minFt("ARG", "FRA", l);
         System.out.println(res);
         res = airSystem.getAirports().minTt("ARG", "FRA", l);
-        System.out.println(res);
+        System.out.println(res);*/
+
+        AirSystem airSystem = new AirSystem();
+        printHelp();
+        boolean isRunning = true;
+
+        Scanner sc = new Scanner(System.in);
+
+        while(isRunning) {
+            System.out.println("What do you want to do next?(insert command)");
+            String[] commands = sc.nextLine().split(" ");
+            String command = commands[0];
+
+            switch (command) {
+                case "insert":
+                    if (commands.length < 3) {
+                        System.out.println("Operation failed, please enter a valid command");
+                    }else {
+                        String command1=commands[1];
+                        switch (command1){
+                            case "airport":
+                                if(commands.length!=5 || !validateName(commands[2]) || !isCoord(commands[3],commands[4])) {
+                                    System.out.println("Operation failed, please enter a valid command");
+                                }else{
+                                    Double lat=toDouble(commands[3]);
+                                    Double longitude=toDouble(commands[4]);
+                                    airSystem.addAirport(commands[2], lat, longitude);
+                                    System.out.println("Added Airport successfully!");
+                                }
+                                break;
+                            case "flight":
+                                if(commands.length!=10 || !validateName(commands[2]) || !validateFlightNum(commands[3])
+                                        || !validateWeekDays(commands[4])|| !validateAirport(commands[5])
+                                        ||!validateAirport(commands[6]) || !validateTime(commands[7])
+                                        ||!validateDuration(commands[8]) ||!validatePrice(commands[9])) {
+                                    System.out.println("Operation failed, please enter a valid command");
+                                }else{
+                                    Integer num=toInteger(commands[3]);
+                                    List<String> weekdays=toWeekDays(commands[4]);
+                                    String from = commands[5];
+                                    String to = commands[6];
+                                    src.Time time = getTime(commands[7]);
+                                    src.Time duration = getDuration(commands[8]);
+                                    Double price = toDouble(commands[9]);
+                                    airSystem.addFlight(commands[2], num , weekdays, from, to, time, duration, price);
+                                    System.out.println("Added flight successfully!");
+                                }
+                                break;
+                            case "all":
+                                if(commands.length!=5 || !isFile(commands[3])) {
+                                    System.out.println("Operation failed, please enter a valid command");
+                                }else{
+                                    if(commands[2]=="airports"){
+                                        if(commands[4]=="append" || commands[4]=="remove"){
+                                            insertAll("airport", commands[3], commands[4]);
+                                            System.out.println("Insertion successful");
+                                        }else{
+                                            System.out.println("Operation failed, please enter a valid command");
+                                        }
+                                    }else if(commands[2]=="flight"){
+                                        if(commands[4]=="append" || commands[4]=="remove"){
+                                            insertAll("flight", commands[3], commands[4]);
+                                            System.out.println("Insertion successful");
+                                        }else{
+                                            System.out.println("Operation failed, please enter a valid command");
+                                        }
+                                    }else{
+                                        System.out.println("Operation failed, please enter a valid command");
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    break;
+
+                case "delete":
+                    if (commands.length < 3) {
+                        System.out.println("Operation failed, please enter a valid command");
+                    }else {
+                        String command1=commands[1];
+                        switch (command1){
+                            case "airport":
+                                if(commands.length!=3 || !validateAirport(commands[2])) {
+                                    System.out.println("Operation failed, please enter a valid command");
+                                }else{
+                                    airSystem.deleteAirport(commands[2]);
+                                    System.out.println("Airport deleted successfully");
+                                }
+                                break;
+                            case "flight":
+                                if(commands.length!=4 || !validateName(commands[2]) || !validateFlightNum(commands[3])){
+                                    System.out.println("Operation failed, please enter a valid command");
+                                }else{
+                                    airSystem.deleteFlight(commands[2], commands[3]);
+                                    System.out.println("Flight deleted successfully");
+                                }
+                                break;
+                            case "all":
+                                if(commands.length!=3) {
+                                    System.out.println("Operation failed, please enter a valid command");
+                                }else if (commands[2]=="airports") {
+                                    airSystem.deleteAllAirports();
+                                    System.out.println("All airports deleted successfully");
+                                }else if(commands[2]=="flight") {
+                                    airSystem.deleteAllFlights();
+                                    System.out.println("All flights deleted successfully");
+                                }else{
+                                    System.out.println("Operation failed, please enter a valid command");
+                                }
+                                break;
+                        }
+                    }
+                    break;
+
+                case "findRoute":
+                    if(commands.length!=5 || !validateAirport(commands[1]) || !validateAirport(commands[2])
+                            || !validatePriority(commands[3])|| !validateWeekDays(commands[4])){
+                        System.out.println("Operation failed, please enter a valid command");
+                    }else{
+                        System.out.println("Finding route....");
+                        findRoute(commands[1],commands[2],commands[3],commands[4]);
+                    }
+
+                    break;
+
+                case "worldTrip":
+                    if (commands.length != 4 || !validateAirport(commands[1]) || !validatePriority(commands[2])
+                            || !validateWeekDays(commands[3])){
+                        System.out.println("Operation failed, please enter a valid command");
+                    }else
+                    {
+                        System.out.println("Finding route....");
+                        worldTrip(commands[1],commands[2],commands[3]);
+                    }
+                    break;
+
+                case "outputFormat":
+                    if (commands.length != 3 || !validateType(commands[1]) || validateOutput(commands[2]) ) {
+                        System.out.println("Operation failed, please enter a valid command");
+                    }else
+                    {
+
+                    }
+                    break;
+                case "quit":
+                    isRunning=false;
+                    break;
+                default:
+                    System.out.println("Wrong command, please try again");
+
+            }
+        }
+    }
+
+    private static void findRoute(String command, String command1, String command2, String command3) {
+        System.out.println("___not Implemented___");
+    }
+
+    private static void worldTrip(String command, String command1, String command2) {
+        System.out.println("___not Implemented___");
+    }
+
+    private static void insertAll(String flight, String command, String command1) {
+        System.out.println("___not Implemented___");
+    }
+
+    private static List<String> toWeekDays(String command){
+        Character[] charArray = toCharacterArray(command);
+        List<String> ret = new ArrayList<>();
+        String days=new String();
+        for(Character c: charArray){
+            if(c=='-'){
+                ret.add(new String(days));
+                days="";
+            }else{
+                days=days+c;
+            }
+        }
+        return ret;
+    }
+    private static Character[] toCharacterArray( String s ) {
+        if ( s == null ) {
+            return null;
+        }
+
+        int len = s.length();
+        Character[] array = new Character[len];
+        for (int i = 0; i < len ; i++) {
+            array[i] = new Character(s.charAt(i));
+        }
+
+        return array;
+    }
+    private static src.Time getDuration(String command){
+        Character[] charArray = toCharacterArray(command);
+        String hourString=new String();
+        String minuteString= new String();
+        String current=hourString;
+        for(Character c: charArray){
+            if(c=='h'){
+                current=minuteString;
+            }else if(!(c=='m')){
+                current=current+c;
+            }
+        }
+        int hours= Integer.parseInt(hourString);
+        int minutes= Integer.parseInt(minuteString);
+        return new src.Time(hours, minutes);
+    }
+    private static src.Time getTime(String command){
+        Character[] charArray = toCharacterArray(command);
+        String hourString="";
+        String minuteString;
+        String current="";
+        for(Character c: charArray){
+            System.out.println(current);
+            if(c==':'){
+                hourString=current;
+                current="";
+            }else{
+                current=current+c;
+            }
+        }
+        minuteString=current;
+
+        int hours= Integer.parseInt(hourString);
+        int minutes= Integer.parseInt(minuteString);
+        return new src.Time(hours, minutes);
+    }
+    private static Double toDouble(String command) {
+        return Double.parseDouble(command);
+    }
+    private static Integer toInteger(String command) {
+        return Integer.parseInt(command);
+    }
+    private static boolean validateAirport(String command) {
+        if(command.length()<4){
+            return true;
+        }
+        return false;
+    }
+    private static boolean validatePriority(String command) {
+        if(command=="ft" || command=="pr" || command == "tt"){
+            return true;
+        }
+        return false;
+    }
+    private static boolean validateType(String command) {
+        if(command=="text" || command=="KML" ){
+            return true;
+        }
+        return false;
+    }
+    private static boolean validateOutput(String command) {
+        if(isFile(command) || command=="stdout" ){ //No estoy seguro como tiene que funcionar esto
+            return true;
+        }
+        return false;
+    }
+    private static boolean validateWeekDays(String command) {
+        Character[] charArray = toCharacterArray(command);
+        List<String> days = new ArrayList<>();
+        String day=new String();
+        for(Character c: charArray){
+            if(c=='-'){
+                days.add(new String(day));
+                day="";
+            }else if(Character.isAlphabetic(c)){
+                day=day+c;
+            }else{
+                return false;
+            }
+        }
+        days.add(day);
+        if(days.size()>7){
+            return false;
+        }
+        List<String> weekdays = new ArrayList<>();
+        weekdays.add("Lu");weekdays.add("Ma");weekdays.add("Mi"); weekdays.add("Ju"); weekdays.add("Vi"); weekdays.add("Sa"); weekdays.add("Do");
+        for (String str: days){
+            if(!weekdays.contains(str)){
+                return false;
+            }
+        }
+        return true;
+    }
+    private static boolean validateName(String command) {
+        if(command.length()<4){
+            return true;
+        }
+        return false;
+    }
+    private static boolean validateFlightNum(String command) {
+        Character[] charArray = toCharacterArray(command);
+        for(Character c: charArray){
+            if(!Character.isDigit(c)){
+                return false;
+            }
+        }
+        return true;
+    }
+    private static boolean validateTime(String command) {
+        Character[] charArray = toCharacterArray(command);
+        if(!Character.isDigit(charArray[0]) || !Character.isDigit(charArray[1]) || !Character.isDigit(charArray[3]) ||
+            !Character.isDigit(charArray[4]) || charArray[2]!=':'){
+            return false;
+        }
+        return true;
+    }
+    private static boolean validatePrice(String command) {
+        Character[] charArray = toCharacterArray(command);
+        int counter=0;
+        for(Character c: charArray){
+            if(c=='.'){
+                counter++;
+            }
+            if(!Character.isDigit(c) || counter>1){
+                return false;
+            }
+        }
+        return true;
+    }
+    private static boolean validateDuration(String command) {
+        Character[] charArray = toCharacterArray(command);
+        if(!Character.isDigit(charArray[0]) || !Character.isDigit(charArray[1]) || !Character.isDigit(charArray[3]) ||
+                !Character.isDigit(charArray[4]) || charArray[2]!='h' || charArray[5]!='m'){
+            return false;
+        }
+        return true;
+    }
+    private static boolean isFile(String command) {
+        return true; // No se como lo voy a implementar aun.
+    }
+    private static boolean isCoord(String lat, String longitude) {
+        Character[] latArray = toCharacterArray(lat);
+        Character[] longArray = toCharacterArray(longitude);
+        String latString=new String("");
+        String longString= new String("");
+        for(int i=0;i<lat.length();i++){
+            Character c=latArray[i];
+            if(i==0){
+                if(!Character.isDigit(c) && c!='-'){
+                    return false;
+                }
+                latString=latString+c;
+            }else{
+                if(!Character.isDigit(c)){
+                    return false;
+                }
+                latString=latString+c;
+            }
+        }
+        for(int i=0;i<longArray.length;i++){
+            Character c=longArray[i];
+            if(i==0){
+                if(!Character.isDigit(c) && c!='-'){
+                    return false;
+                }
+                longString=longString+c;
+            }else{
+                if(!Character.isDigit(c)){
+                    return false;
+                }
+                longString=longString+c;
+            }
+        }
+        int latInt= Integer.parseInt(latString);
+        int longInt= Integer.parseInt(longString);
+        if(-91<latInt && latInt<91 && -181<longInt && longInt<181){
+            return true;
+        }
+        return false;
     }
 
     private static void printHelp() {
