@@ -192,6 +192,10 @@ public class Main {
                 case "quit":
                     isRunning=false;
                     break;
+                case "help":
+                    printHelp();
+                    break;
+
                 default:
                     System.out.println("Wrong command, please try again");
 
