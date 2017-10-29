@@ -54,6 +54,9 @@ public class Main {
             String command = commands[0];
 
             switch (command) {
+                case "print":
+                    airSystem.getAirports().printArcs();
+                    break;
                 case "insert":
                     if (commands.length < 3) {
                         System.out.println("Operation failed, please enter a valid command");
@@ -90,17 +93,19 @@ public class Main {
                                 break;
                             case "all":
                                 if(commands.length!=5 || !isFile(commands[3])) {
+                                    System.out.println("isFile");
                                     System.out.println("Operation failed, please enter a valid command");
                                 }else{
-                                    if(commands[2]=="airports"){
-                                        if(commands[4]=="append" || commands[4]=="remove"){
+                                    if(commands[2].equals("airports")){
+                                        if(commands[4].equals("append") || commands[4].equals("remove")){
                                             insertAll("airport", commands[3], commands[4]);
                                             System.out.println("Insertion successful");
                                         }else{
+                                            System.out.println("appendremove");
                                             System.out.println("Operation failed, please enter a valid command");
                                         }
-                                    }else if(commands[2]=="flight"){
-                                        if(commands[4]=="append" || commands[4]=="remove"){
+                                    }else if(commands[2].equals("flight")){
+                                        if(commands[4].equals("append") || commands[4].equals("remove")){
                                             insertAll("flight", commands[3], commands[4]);
                                             System.out.println("Insertion successful");
                                         }else{
@@ -233,29 +238,12 @@ public class Main {
 
         return array;
     }
-    private static src.Time getDuration(String command){
-        Character[] charArray = toCharacterArray(command);
-        String hourString=new String();
-        String minuteString= new String();
-        String current=hourString;
-        for(Character c: charArray){
-            if(c=='h'){
-                current=minuteString;
-            }else if(!(c=='m')){
-                current=current+c;
-            }
-        }
-        int hours= Integer.parseInt(hourString);
-        int minutes= Integer.parseInt(minuteString);
-        return new src.Time(hours, minutes);
-    }
     private static src.Time getTime(String command){
         Character[] charArray = toCharacterArray(command);
         String hourString="";
         String minuteString;
         String current="";
         for(Character c: charArray){
-            System.out.println(current);
             if(c==':'){
                 hourString=current;
                 current="";
@@ -269,6 +257,25 @@ public class Main {
         int minutes= Integer.parseInt(minuteString);
         return new src.Time(hours, minutes);
     }
+    private static src.Time getDuration(String command){
+        Character[] charArray = toCharacterArray(command);
+        String hourString="";
+        String minuteString="";
+        String current="";
+        for(Character c: charArray){
+            if(c=='h'){
+                hourString=current;
+                current="";
+            }else if(!(c=='m')){
+                current=current+c;
+            }
+        }
+        minuteString=current;
+        int hours= Integer.parseInt(hourString);
+        int minutes= Integer.parseInt(minuteString);
+        return new src.Time(hours, minutes);
+    }
+
     private static Double toDouble(String command) {
         return Double.parseDouble(command);
     }
