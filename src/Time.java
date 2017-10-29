@@ -37,6 +37,11 @@ public class Time {
         this.minute = time.minute;
     }
 
+    @Override
+    public String toString() {
+        return hour+":"+minute;
+    }
+
     public int getWeekDay() {
         return weekDay;
     }

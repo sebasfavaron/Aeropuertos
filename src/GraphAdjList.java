@@ -127,6 +127,13 @@ public abstract class GraphAdjList{
             }
         }
     }
+    public void printArcs(){
+        for(Node node: getNodes()){
+            for(Arc adj : node.adj){
+                System.out.println(adj.info.toString());
+            }
+        }
+    }
 
     //HECHA POR SEBAS, NO SE SI ESTA BIEN
     public Flight getArc(String flightName) {
