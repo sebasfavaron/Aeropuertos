@@ -566,23 +566,23 @@ public abstract class GraphAdjList{
         }else {
             if (horas==0){
                 if (minutos>0){
-                    return (dias+aux)*60*24+minutos;
+                    return (dias+aux)*60*24-minutos;
                 }else{
-                    return (dias+aux)*60*24+minutos;
+                    return (dias+aux)*60*24-minutos;
                 }
             }else if (horas>0){
                 if (minutos==0){
-                    return (dias+aux)*60*24+horas*60;
+                    return (dias+aux)*60*24-horas*60;
                 }else if (minutos>0){
-                    return (dias+aux)*60*24+horas*60+minutos;
+                    return (dias+aux)*60*24-(horas-1)*60-(60-arrivo.getMinute()+salida.getMinute());
                 }else {
-                    return (dias+aux)*60*24+horas*60+minutos;
+                    return (dias+aux)*60*24-(horas-1)*60-(60-arrivo.getMinute()+salida.getMinute());
                 }
             }else {//horas<0
                 if (minutos==0){
                     return (dias+aux)*60*24-horas*60;
                 }else if (minutos>0){
-                    return (dias+aux)*60*24-(horas+1)*60-(60-arrivo.getMinute()+salida.getMinute());
+                    return (dias+aux)*60*24-(horas+1)*60+(60-arrivo.getMinute()+salida.getMinute());
                 }else {
                     return (dias+aux)*60*24-(horas+1)*60-(60-arrivo.getMinute()+salida.getMinute());
                 }
