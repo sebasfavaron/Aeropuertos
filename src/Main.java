@@ -14,7 +14,8 @@ public class Main {
     }
     private static void paramsManager(String[] args) {
 
-        /*airSystem.addAirport("ARG", 12., 12.);
+        AirSystem airSystem = new AirSystem();
+        airSystem.addAirport("ARG", 12., 12.);
         airSystem.addAirport("FRA", 13., 13.);
         airSystem.addAirport("ENG", 15., 15.);
         airSystem.addAirport("AUS", 15., 15.);
@@ -26,7 +27,7 @@ public class Main {
         l.add("Jue");
         l.add("Vie");
         airSystem.addFlight("AA", 1234, l, "ARG", "FRA", new src.Time(10,12), new src.Time(2,0), 60.);
-        airSystem.deleteFlight("AA#1234");
+        //airSystem.deleteFlight("AA#1234");
         airSystem.addFlight("AA", 2232, l, "ARG", "USA", new src.Time(10,12), new src.Time(10,0), 20.);
         airSystem.addFlight("AA", 3232, l, "USA", "ENG", new src.Time(10,12), new src.Time(10,0), 20.);
         airSystem.addFlight("AA", 4231, l, "ENG", "FRA", new src.Time(10,12), new src.Time(22,0), 20.);
@@ -40,8 +41,9 @@ public class Main {
         res = airSystem.getAirports().minFt("ARG", "FRA", l);
         System.out.println(res);
         res = airSystem.getAirports().minTt("ARG", "FRA", l);
-        System.out.println(res);*/
+        System.out.println(res);
 
+        /*
         AirSystem airSystem = new AirSystem();
         printHelp();
         boolean isRunning = true;
@@ -200,7 +202,9 @@ public class Main {
                     System.out.println("Wrong command, please try again");
 
             }
+
         }
+        */
     }
 
     private static void findRoute(String command, String command1, String command2, String command3) {

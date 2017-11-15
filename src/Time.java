@@ -63,9 +63,39 @@ public class Time {
         int dDay = weekDay - other.weekDay;
         int dHour = hour - other.hour;
         int dMinute = minute - other.minute;
+        if (other.weekDay==this.weekDay) {
+            if (this.hour == other.hour) {
+                if (this.minute == other.minute) {
+                    return 0;
+                }else if (this.minute>other.minute){
+                    return 7*24*60-dMinute;
+                }else {
+                    return dMinute;
+                }
+            }else if(this.hour<other.hour){
+                if (other.minute<this.minute){
+                    return (other.hour-this.hour-1)*60+60-this.minute+other.minute;
+                }else if (other.minute==this.minute){
+                    return (other.hour-this.hour)*60;
+                }else {
+                    return (other.hour-this.hour-1)*60+60-this.minute+other.minute;
+                }
+            }else {
+                if (this.minute==other.minute){
+                    return 7*24*60-this.hour-other.hour;
+                }else {
+                    return 7*24*60-(this.hour-other.hour-1)+60-(60-other.minute+this.minute);
+                }
+            }
+        }else if (other.weekDay<this.weekDay){
+            return 7*24*60-(this.hour-other.hour-1)*60-(60-other.minute+this.minute);
+        }
+        /*
         if (dDay<0){
             dDay+=7;
         }
+        return dDay * 24 * 60 + dHour * 60 + dMinute;
+        */
         return dDay * 24 * 60 + dHour * 60 + dMinute;
     }
 
