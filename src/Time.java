@@ -16,11 +16,11 @@ public class Time {
         this.minute = minute;
     }
     public Time(int weekDay, int hour, int minute) {
-        while (minute > 60){
+        while (minute >= 60){
             minute -= 60;
             hour += 1;
         }
-        while (hour > 24){
+        while (hour >= 24){
             hour -= 24;
             if (weekDay < 7)
                 weekDay += 1;
@@ -60,9 +60,37 @@ public class Time {
      * @return time difference in minutes
      */
     public int difference(Time other) {
+        //nosotros somos salida del proximo y ellos son arrivo del anterior
         int dDay = weekDay - other.weekDay;
         int dHour = hour - other.hour;
         int dMinute = minute - other.minute;
+        int add=0;
+        if (dDay<0){
+            add+=7;
+        }
+        if (dHour==0){
+            if (dMinute == 0) {
+                return (dDay+add)*60*24;
+            }
+        }
+        if (dDay==0){
+            if (dHour>0){
+                if (dMinute==0){
+                    return dHour*60;
+                }else if (dMinute<0){
+                    return (dHour-1)*60+60-other.minute+minute;
+                }else{
+                    return (dHour-1)*60+60-other.minute+minute;
+                }
+            }else if (dHour<0){
+                if (dMinute==0){
+                    return 7*60*24+dHour*60;
+                }else if (dMinute<0){
+                    return 7*60*24+dHour*60+dMinute;
+                }
+            }
+        }
+        /*
         if (other.weekDay==this.weekDay) {
             if (this.hour == other.hour) {
                 if (this.minute == other.minute) {
@@ -88,7 +116,24 @@ public class Time {
                 }
             }
         }else if (other.weekDay<this.weekDay){
-            return 7*24*60-(this.hour-other.hour-1)*60-(60-other.minute+this.minute);
+            if (this.hour == other.hour) {
+                if (this.minute == other.minute) {
+                    return dDay * 24 * 60;
+                } else if (this.minute > other.minute) {
+                    return dDay * 24 * 60 + dMinute;
+                } else {
+                    return dDay * 24 * 60 + dMinute;
+                }
+            }else if(this.hour<other.hour){
+                if (this.minute == other.minute) {
+                    return dDay * 24 * 60+dHour;
+                } else if (this.minute > other.minute) {
+                    return dDay * 24 * 60 + dMinute;
+                } else {
+                    return dDay * 24 * 60 + dMinute;
+                }
+            }
+            //return dDay * 24 * 60 + dHour * 60 + dMinute;
         }
         /*
         if (dDay<0){
@@ -96,7 +141,7 @@ public class Time {
         }
         return dDay * 24 * 60 + dHour * 60 + dMinute;
         */
-        return dDay * 24 * 60 + dHour * 60 + dMinute;
+        return 7*24*60-(this.hour-other.hour-1)*60-(60-other.minute+this.minute);
     }
 
     public int getVal(){

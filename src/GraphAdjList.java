@@ -1,5 +1,7 @@
 package src;
 
+import org.omg.CORBA.TIMEOUT;
+
 import java.util.*;
 
 /**
@@ -49,7 +51,7 @@ public abstract class GraphAdjList{
     private class Arc {
         public Flight info;
         public Node neighbor;
-        public boolean tag;
+        public boolean visited;
 
         public Arc(Flight info, Node neighbor) {
             super();
@@ -419,13 +421,14 @@ public abstract class GraphAdjList{
         });
         for (Arc arc : f.adj) {
             boolean added = false;
-            for(String day : arc.info.getWeekDay())
-                if(!added && days.contains(day) && arc.info.getDeparture().getName().equals(f.info.getName())) {
+            for(String day : arc.info.getWeekDay()) {
+                if (!added && days.contains(day) && arc.info.getDeparture().getName().equals(f.info.getName())) {
                     src.Time time = new Time(parseDay(day), arc.info.getDepartureTime().getHour(), arc.info.getDepartureTime().getMinute());
-                    src.Time auxtime = new Time(parseDay(day),arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(),arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute());
-                    pq.offer(new PQNode(arc.neighbor,(double) auxtime.getVal(), arc.info, auxtime));
+                    src.Time auxtime = new Time(parseDay(day), arc.info.getDepartureTime().getHour() + arc.info.getDuration().getHour(), arc.info.getDepartureTime().getMinute() + arc.info.getDuration().getMinute());
+                    pq.offer(new PQNode(arc.neighbor, (double) arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(), arc.info, auxtime));
                     added = true;
                 }
+            }
         }
         //PQNode aux;
         //Stack<Flight> itinerary=new Stack();
@@ -434,18 +437,20 @@ public abstract class GraphAdjList{
             PQNode aux = pq.poll();
             if(aux.node == t)
                 return aux.itinerary;
-            if(!aux.node.visited) {
-                aux.node.visited = true;	//Si o si hay que marcarlo cuando lo saco.
+            //if(!aux.node.visited) {
+                //aux.node.visited = true;	//Si o si hay que marcarlo cuando lo saco.
                 for(Arc	arc : aux.node.adj) {
-                    if(!arc.neighbor.visited && arc.info.getDeparture().getName().equals(aux.node.info.getName())) {
-                        Flight prevFlight = aux.itinerary.get(aux.itinerary.size() - 1);
+                    if(!aux.itinerary.contains(arc) && arc.info.getDeparture().getName().equals(aux.node.info.getName())) {
+                        //arc.visited=true;
+                        //Flight prevFlight = aux.itinerary.get(aux.itinerary.size() - 1);
                         for (String day:arc.info.getWeekDay()) {
+                            Time salida=new Time(parseDay(day),arc.info.getDepartureTime().getHour(),arc.info.getDepartureTime().getMinute());
                             src.Time auxtime = new Time(parseDay(day),arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(), arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute());
-                            pq.offer(new PQNode(arc.neighbor, aux.value +(double) auxtime.difference(aux.time), aux.itinerary, arc.info, new Time(parseDay(day), arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(), arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute())));
+                            pq.offer(new PQNode(arc.neighbor, aux.value +tiempoDeEspera(aux.time,salida)+arc.info.getDuration().getHour()*60+arc.info.getDuration().getMinute(), aux.itinerary, arc.info,auxtime));
                         }
                     }
                 }
-            }
+            //}
         }
         return new ArrayList<>();
     }
@@ -520,5 +525,68 @@ public abstract class GraphAdjList{
             case "Dom": return 7;
         }
         throw new IllegalArgumentException();
+    }
+    private double tiempoDeEspera(Time arrivo,Time salida){
+        int horas=salida.getHour()-arrivo.getHour();
+        int minutos=salida.getMinute()-arrivo.getMinute();
+        int dias=salida.getWeekDay()-arrivo.getWeekDay();
+        int aux=0;
+        if (dias<0){
+            aux+=8;
+        }
+        if (horas==0){
+            if (minutos == 0) {
+                return (dias+aux)*60*24;
+            }
+        }
+        if (dias==0){
+            if (horas==0){
+                if (minutos>0){
+                    return minutos;
+                }else {
+                    return 7*60*24+minutos;
+                }
+            }else if (horas>0){
+                if (minutos==0){
+                    return horas*60;
+                }else if (minutos<0){
+                    return (horas-1)*60+60-arrivo.getMinute()+salida.getMinute();//other.minute+minute;
+                }else{
+                    return (horas-1)*60+60-arrivo.getMinute()+salida.getMinute();//-other.minute+minute;
+                }
+            }else {//horas<0
+                if (minutos==0){
+                    return 7*60*24+horas*60;
+                }else if (minutos<0){
+                    return 7*60*24+(horas+1)*60-(60-arrivo.getMinute()+salida.getMinute());
+                }else {
+                    return 7*60*24+(horas+1)*60+(60-arrivo.getMinute()+salida.getMinute());
+                }
+            }
+        }else {
+            if (horas==0){
+                if (minutos>0){
+                    return (dias+aux)*60*24+minutos;
+                }else{
+                    return (dias+aux)*60*24+minutos;
+                }
+            }else if (horas>0){
+                if (minutos==0){
+                    return (dias+aux)*60*24+horas*60;
+                }else if (minutos>0){
+                    return (dias+aux)*60*24+horas*60+minutos;
+                }else {
+                    return (dias+aux)*60*24+horas*60+minutos;
+                }
+            }else {//horas<0
+                if (minutos==0){
+                    return (dias+aux)*60*24-horas*60;
+                }else if (minutos>0){
+                    return (dias+aux)*60*24-(horas+1)*60-(60-arrivo.getMinute()+salida.getMinute());
+                }else {
+                    return (dias+aux)*60*24-(horas+1)*60-(60-arrivo.getMinute()+salida.getMinute());
+                }
+            }
+        }
     }
 }
