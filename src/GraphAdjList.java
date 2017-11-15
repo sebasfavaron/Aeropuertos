@@ -76,16 +76,15 @@ public abstract class GraphAdjList{
             if (getClass() != obj.getClass())
                 return false;
             final Arc other = (Arc) obj;
-            if (neighbor == null) {
-                if (other.neighbor != null)
+            if (info == null) {
+                if (other.info != null)
                     return false;
-            } else if (!neighbor.equals(other.neighbor))
+            } else if (!info.equals(other.info))
                 return false;
             return true;
         }
 
     }
-
     private HashMap<Airport, Node> nodes;
 
     protected abstract boolean isDirected();
@@ -512,13 +511,13 @@ public abstract class GraphAdjList{
 
     private int parseDay(String day) {
         switch (day) {
-            case "Lun": return 0;
-            case "Mar": return 1;
-            case "Mie": return 2;
-            case "Jue": return 3;
-            case "Vie": return 4;
-            case "Sab": return 5;
-            case "Dom": return 6;
+            case "Lun": return 1;
+            case "Mar": return 2;
+            case "Mie": return 3;
+            case "Jue": return 4;
+            case "Vie": return 5;
+            case "Sab": return 6;
+            case "Dom": return 7;
         }
         throw new IllegalArgumentException();
     }

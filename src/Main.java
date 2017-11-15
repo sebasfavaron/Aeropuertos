@@ -26,9 +26,12 @@ public class Main {
         l.add("Mie");
         l.add("Jue");
         l.add("Vie");
-        airSystem.addFlight("AA", 1234, l, "ARG", "FRA", new src.Time(10,12), new src.Time(2,0), 60.);
+        //airSystem.addFlight("AA", 1234, l, "ARG", "FRA", new src.Time(10,12), new src.Time(2,0), 60.);
         //airSystem.deleteFlight("AA#1234");
         airSystem.addFlight("AA", 2232, l, "ARG", "USA", new src.Time(10,12), new src.Time(10,0), 20.);
+        airSystem.addFlight("AA", 5555, l, "ARG", "FRA", new src.Time(10,12), new src.Time(40,0), 900.);
+        airSystem.addFlight("FF", 8898, l, "ARG", "FRA", new src.Time(10,12), new src.Time(6,0), 999.);
+        //airSystem.addFlight("AA", 4444, l, "ARG", "FRA", new src.Time(9,12), new src.Time(1,0), 20.);
         airSystem.addFlight("AA", 3232, l, "USA", "ENG", new src.Time(10,12), new src.Time(10,0), 20.);
         airSystem.addFlight("AA", 4231, l, "ENG", "FRA", new src.Time(10,12), new src.Time(22,0), 20.);
         airSystem.addFlight("AA", 5231, l, "FRA", "ENG", new src.Time(10,12), new src.Time(22,0), 20.);

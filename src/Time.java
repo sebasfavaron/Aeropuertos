@@ -22,11 +22,11 @@ public class Time {
         }
         while (hour > 24){
             hour -= 24;
-            if (weekDay < 6)
+            if (weekDay < 7)
                 weekDay += 1;
         }
-        if(weekDay > 6)
-            weekDay = weekDay % 7;
+        if(weekDay > 7)
+            weekDay = weekDay % 8;
         this.weekDay = weekDay;
         this.hour = hour;
         this.minute = minute;
