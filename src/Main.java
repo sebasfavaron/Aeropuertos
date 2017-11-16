@@ -24,10 +24,10 @@ public class Main {
         airSystem.addAirport("F", 16., 16.);*/
         List<String> l = new ArrayList<>();
 
-
         l.add("Lu");
 
-        //airSystem.addFlight("AB", 2232, l, "A", "B", new src.Time(0,0), new src.Time(1,0), 1.0);
+        airSystem.addFlight("AB", 2232, l, "A", "B", new src.Time(0,0), new src.Time(1,0), 1.0);
+        airSystem.deleteAllFlights();
         /*airSystem.addFlight("EF", 3232, l, "E", "F", new src.Time(7,3), new src.Time(1,0), 1.0);
         airSystem.addFlight("AF", 2222, l, "A", "F", new src.Time(0,0), new src.Time(400,0), 50.0);
         airSystem.addFlight("BE", 2222, l, "B", "E", new src.Time(0,0), new src.Time(1,0), 50.0);*/

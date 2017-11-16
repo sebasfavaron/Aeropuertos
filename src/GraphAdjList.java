@@ -90,7 +90,9 @@ public abstract class GraphAdjList{
     private HashMap<Airport, Node> nodes;
     private List<Node> nodeList;
 
-    protected abstract boolean isDirected();
+    protected boolean isDirected(){
+        return true;
+    }
 
     public GraphAdjList() {
         this.nodes = new HashMap<Airport, Node>();
@@ -140,7 +142,13 @@ public abstract class GraphAdjList{
     }
     public void printArcs(){
         for(Node node: nodeList){
+            System.out.println("-Airport: "+node.info.getName());
             for(Arc adj : node.adj){
+                if(adj.info.getDeparture().equals(node.info)){
+                    System.out.print("Departure: ");
+                }else{
+                    System.out.print("Arrival: ");
+                }
                 System.out.println(adj.info.toString());
             }
         }
@@ -256,11 +264,8 @@ public abstract class GraphAdjList{
     }
 
     public void removeAllVertex() {
-        final Iterator<Airport> it = nodes.keySet().iterator();
-        while(it.hasNext()) {
-            it.next();
-            it.remove();
-        }
+        this.nodes = new HashMap<Airport, Node>();
+        this.nodeList = new LinkedList<>();
     }
 
     public int vertexCount() {
