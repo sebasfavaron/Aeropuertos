@@ -246,9 +246,10 @@ public abstract class GraphAdjList{
     }
 
     public void removeAllVertex() {
-        Iterator<Airport> it = nodes.keySet().iterator();
+        final Iterator<Airport> it = nodes.keySet().iterator();
         while(it.hasNext()) {
-            nodes.remove(it.next());
+            it.next();
+            it.remove();
         }
     }
 
