@@ -12,6 +12,7 @@ import java.util.*;
  */
 public abstract class GraphAdjList{
 
+    private GetValue getValuePrice, getValueFlightTime, getValueTotalTime;
     private class Node {
         public Airport info;
         public boolean visited;
@@ -98,6 +99,46 @@ public abstract class GraphAdjList{
     public GraphAdjList() {
         this.nodes = new HashMap<Airport, Node>();
         this.nodeList = new LinkedList<>();
+        this.getValuePrice = new GetValue() {
+            @Override
+            public double get(Flight f2) {
+                return f2.getPrice();
+            }
+
+            @Override
+            public double getTt(Flight f1, Flight f2) {
+                return -1;
+            }
+        };
+        this.getValueFlightTime = new GetValue() {
+            @Override
+            public double get(Flight f2) {
+                //Restarle 0 horas, 0 minutos te devuelve la duracion del Time en f2.duration en minutos en int
+                return f2.getDuration().difference(new Time(0,0));
+            }
+            public double getTt(Flight f1, Flight f2) {
+                return -1;
+            }
+        };
+        this.getValueTotalTime = new GetValue() {
+            @Override
+            /**
+             * Tiempo de espera pre-vuelo + tiempo en vuelo
+             * f1: vuelo anterior
+             * f2: vuelo que sale
+             */
+            public double getTt(Flight f1, Flight f2) {
+                return f2.getDuration().difference(new Time(0,0)) +
+                        f2.getDepartureTime().difference(f1.getDepartureTime().add(f1.getDuration()));
+            }
+
+            /**
+             * Este lo llamo una vez (para el primer flight que no tiene tiempo previo de espera)
+             */
+            public double get(Flight f2) {
+                return f2.getDuration().difference(new Time(0,0));
+            }
+        };
     }
 
     public boolean isEmpty() {
@@ -533,13 +574,7 @@ public abstract class GraphAdjList{
     }
 
 
-    public List<Flight> worldTrip(String airName, GetValue getValue) {
-        Node n = null;
-        for(Node node: nodeList)
-            if(node.info.getName().equals(airName))
-                n = node;
-        if(n == null)
-            return null;
+    private List<Flight> worldTrip(Node n, GetValue getValue) {
         List<Node> l = new LinkedList<>();
         List<Flight> solution = new LinkedList<>();
         List<List<Flight>> solutions = new LinkedList<>();
@@ -609,55 +644,28 @@ public abstract class GraphAdjList{
         return ret;
     }
 
-    public List<Flight> worldTripPrice(String airName) {
-        return worldTrip(airName, new GetValue() {
-            @Override
-            public double get(Flight f2) {
-                return f2.getPrice();
-            }
-            public double getTt(Flight f1, Flight f2) {
-                return -1;
-            }
-        });
+    public PQNode worldTripPrice(String airName) {
+        Node n = getNode(airName);
+        if(n == null)
+            return null;
+        List<Flight> flightList = worldTrip(n, getValuePrice);
+        Flight lastFlight = flightList.get(flightList.size()-1);
+        Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
+        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime), getPerformanceTt(flightList, getValueTotalTime), arrivalTime);
     }
 
-    public List<Flight> worldTripFlightTime(String airName) {
-        return worldTrip(airName, new GetValue() {
-            @Override
-            public double get(Flight f2) {
-                //Restarle 0 horas, 0 minutos te devuelve la duracion del Time en f2.duration en minutos en int
-                return f2.getDuration().difference(new Time(0,0));
-            }
-            public double getTt(Flight f1, Flight f2) {
-                return -1;
-            }
-        });
+    public PQNode worldTripFlightTime(String airName) {
+        Node n = getNode(airName);
+        if(n == null)
+            return null;
+        List<Flight> flightList = worldTrip(n, getValueFlightTime);
+        Flight lastFlight = flightList.get(flightList.size()-1);
+        Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
+        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime), getPerformanceTt(flightList, getValueTotalTime), arrivalTime);
     }
 
-    public List<Flight> worldTripTotalTime(String airName) {
-        GetValue getValue = new GetValue() {
-            @Override
-            /**
-             * Tiempo de espera pre-vuelo + tiempo en vuelo
-             * f1: vuelo anterior
-             * f2: vuelo que sale
-             */
-            public double getTt(Flight f1, Flight f2) {
-                return f2.getDuration().difference(new Time(0,0)) +
-                        f2.getDepartureTime().difference(f1.getDepartureTime().add(f1.getDuration()));
-            }
-
-            /**
-             * Este lo llamo una vez (para el primer flight que no tiene tiempo previo de espera)
-             */
-            public double get(Flight f2) {
-                return f2.getDuration().difference(new Time(0,0));
-            }
-        };
-        Node n = null;
-        for(Node node: nodeList)
-            if(node.info.getName().equals(airName))
-                n = node;
+    public PQNode worldTripTotalTime(String airName) {
+        Node n = getNode(airName);
         if(n == null)
             return null;
         List<Node> l = new LinkedList<>();
@@ -670,27 +678,38 @@ public abstract class GraphAdjList{
 
         //Elijo la mejor solucion de todas las posibles
         for(List<Flight> list: solutions) {
-            double localPerformance = getPerformanceTt(list, getValue);
+            double localPerformance = getPerformanceTt(list, getValueTotalTime);
             System.out.println(list.toString()+" "+localPerformance);
             if(bestPerformance == null || localPerformance<bestPerformance) {
                 bestPath = list;
                 bestPerformance = localPerformance;
             }
         }
-        if(bestPath != null)
-            System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
-        return bestPath;
+        if(bestPath == null)
+            return null;
+        System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
+        List<Flight> flightList = bestPath;
+        Flight lastFlight = flightList.get(flightList.size()-1);
+        Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
+        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime), bestPerformance, arrivalTime);
+    }
+
+    private Node getNode(String airName) {
+        for(Node node: nodeList)
+            if(node.info.getName().equals(airName))
+                return node;
+        return null;
     }
 
     private int parseDay(String day) {
         switch (day) {
-            case "Lu": return 1;
-            case "Ma": return 2;
-            case "Mi": return 3;
-            case "Ju": return 4;
-            case "Vi": return 5;
-            case "Sa": return 6;
-            case "Do": return 7;
+            case "Lu": return 0;
+            case "Ma": return 1;
+            case "Mi": return 2;
+            case "Ju": return 3;
+            case "Vi": return 4;
+            case "Sa": return 5;
+            case "Do": return 6;
         }
         throw new IllegalArgumentException();
     }

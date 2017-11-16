@@ -39,7 +39,7 @@ public class Time {
 
     @Override
     public String toString() {
-        return hour+":"+minute;
+        return "Day: "+weekDay+", Time: "+hour+":"+minute;
     }
 
     public int getWeekDay() {
@@ -152,6 +152,17 @@ public class Time {
         int weekD = this.weekDay + t2.weekDay;
         int hour = this.hour + t2.hour;
         int min = this.minute + t2.minute;
+        if(min >= 60) {
+            hour += (min/60);
+            min = min % 60;
+        }
+        if(hour >= 24) {
+            weekD += (hour/24);
+            hour = hour % 24;
+        }
+        if(weekD >= 7) {
+            weekD = weekD%7;
+        }
         return new Time(weekD, hour, min);
     }
 
