@@ -94,6 +94,7 @@ public abstract class GraphAdjList{
 
     public GraphAdjList() {
         this.nodes = new HashMap<Airport, Node>();
+        this.nodeList = new LinkedList<>();
     }
 
     public boolean isEmpty() {
