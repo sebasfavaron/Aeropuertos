@@ -514,6 +514,67 @@ public abstract class GraphAdjList{
         return new ArrayList<>();
     }
 
+    public List<Flight> worldTripPrice(String airName, GetValue getValue) {
+        Node n = null;
+        for(Node node: nodeList)
+            if(node.info.getName().equals(airName))
+                n = node;
+        if(n == null)
+            return null;
+        List<Node> l = new LinkedList<>();
+        List<Flight> solution = new LinkedList<>();
+        List<List<Flight>> solutions = new LinkedList<>();
+        clearMarks();
+        worldTripPriceRec(n, n, l, solution, solutions);
+        List<Flight> bestPath = null;
+        Double bestPerformance = null;
+        //System.out.println("----------------------------WorldTrip----------------------------");
+        for(List<Flight> list: solutions) {
+            double localPerformance = getPerformance(list, getValue);
+            //System.out.println(list.toString()+" "+localPerformance);
+            if(bestPerformance == null || localPerformance<bestPerformance) {
+                bestPath = list;
+                bestPerformance = localPerformance;
+            }
+        }
+        //System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
+        //System.out.println("-----------------------------------------------------------------");
+
+        return bestPath;
+    }
+
+    private double getPerformance(List<Flight> list, GetValue getValue) {
+        double ret = 0;
+        for(Flight flight: list) {
+            if(flight == null)
+                return -1;
+            ret += getValue.get(flight);
+        }
+        return ret;
+    }
+
+    private void worldTripPriceRec(Node start, Node node, List<Node> l, List<Flight> sol, List<List<Flight>> solutions) {
+        node.visited = true;
+        l.add(node);
+        for(Arc arc: node.adj) {
+            if(l.size() == nodeList.size() && arc.neighbor.info.getName().equals(start.info.getName())) {
+                l.add(start);
+                sol.add(arc.info);
+                solutions.add(new LinkedList<>(sol));
+                sol.remove(sol.size()-1);
+                l.remove(l.size()-1);
+            }
+            else if(!arc.neighbor.visited) {
+                sol.add(arc.info);
+                worldTripPriceRec(start, arc.neighbor, l, sol, solutions);
+            }
+        }
+        l.remove(l.size()-1);
+        if(sol.size() != 0)
+            sol.remove(sol.size()-1);
+        node.visited = false;
+    }
+
     private int parseDay(String day) {
         switch (day) {
             case "Lu": return 1;
