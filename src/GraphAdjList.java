@@ -2,6 +2,7 @@ package src;
 
 import org.omg.CORBA.TIMEOUT;
 
+import javax.xml.crypto.dom.DOMCryptoContext;
 import java.util.*;
 
 /**
@@ -359,45 +360,61 @@ public abstract class GraphAdjList{
 
     public class PQNode{
         Node node;
-        Double value;
+        //Double value;
         src.Time time;
         ArrayList<Flight> itinerary;
-        public PQNode(Node node, Double value, src.Time time){
+        public Double price;
+        public Double ft;
+        public Double tt;
+        public PQNode(Node node, Double price, Double ft, Double tt, src.Time time){
             this.node=node;
-            this.value=value;
+            //this.value=value;
             this.time = time;
             itinerary=new ArrayList<>();
+            this.price=price;
+            this.ft=ft;
+            this.tt=tt;
             //itinerary.push(flight);
         }
-        public PQNode(Node node, Double value, Flight flight, src.Time time){
-            this(node, value, time);
+        public PQNode(Node node, Double price, Double ft, Double tt, Flight flight, src.Time time){
+            this(node, price,ft,tt, time);
             itinerary.add(flight);
         }
-        public PQNode(Node node, Double value, ArrayList<Flight> stack, Flight flight, src.Time time){
+        public PQNode(Node node,Double price, Double ft, Double tt, ArrayList<Flight> stack, Flight flight, src.Time time){
             this.node=node;
-            this.value=value;
+            //this.value=value;
             this.time = time;
             itinerary=new ArrayList<>(stack);
             itinerary.add(flight);
+            this.price=price;
+            this.ft=ft;
+            this.tt=tt;
         }
     }
-    public ArrayList<Flight> minPrice(String from, String to, List<String> days){
-        return minDistance(from, to, new GetValue() {
+    public PQNode minPrice(String from, String to, List<String> days){
+        return minDistance(from, to, new Comparator<PQNode>() {
             @Override
-            public double get(Flight nextFlight) {
-                return nextFlight.getPrice();
+            public int compare(PQNode pqNode, PQNode t1) {
+                return (int)( pqNode.price-t1.price);
             }
-        },days);
+        }, days);
     }
-    public ArrayList<Flight> minFt(String from,String to,List<String> days){
-        return minDistance(from, to, new GetValue() {
+    public PQNode minFt(String from,String to,List<String> days){
+        return minDistance(from, to, new Comparator<PQNode>() {
             @Override
-            public double get(Flight nextFlight) {
-                return nextFlight.getDuration().getHour()*60+nextFlight.getDuration().getMinute();
+            public int compare(PQNode pqNode, PQNode t1) {
+                return (int)(pqNode.ft-t1.ft);
             }
-        },days);
+        }, days);
     }
-    public ArrayList<Flight> minTt(String from, String to, List<String> days){
+    public PQNode minTt(String from, String to, List<String> days){
+        return minDistance(from, to, new Comparator<PQNode>() {
+            @Override
+            public int compare(PQNode pqNode, PQNode t1) {
+                return (int)(pqNode.tt-t1.tt);
+            }
+        }, days);
+        /*
         Node f = null, t = null;
         for(Airport a : nodes.keySet()) {
             if(a.getName().equals(from))
@@ -459,9 +476,10 @@ public abstract class GraphAdjList{
             //}
         }
         return new ArrayList<>();
+        */
     }
 
-    private ArrayList<Flight> minDistance(String from, String to, GetValue getValue, List<String> days){
+    private PQNode minDistance(String from, String to, Comparator<PQNode> cmp, List<String> days){
         Node f = null, t = null;
         for(Airport a : nodes.keySet()) {
             if(a.getName().equals(from))
@@ -475,25 +493,13 @@ public abstract class GraphAdjList{
         }
         clearMarks();	//	Luego voy a marcar los nodos que ya use para no llegar la lista en loop
         //tendria que cambiar el codigo para q acepte comparators
-        PriorityQueue<PQNode> pq = new PriorityQueue<>(new Comparator<PQNode>() {
-            @Override
-            public int compare(PQNode node, PQNode t1) {
-                //la cambie para que, por ej, 11.1 sea mayor a 11.0. Sino con '(int)' retornaba 0
-                double diff = node.value-t1.value;
-                if(diff == 0)
-                    return 0;
-                else if(diff > 0)
-                    return 1;
-                else
-                    return -1;
-            }
-        });
+        PriorityQueue<PQNode> pq = new PriorityQueue<>(cmp);
         for (Arc arc : f.adj) {
             boolean added = false;
             for(String day : arc.info.getWeekDay()){
                 if(!added && days.contains(day) && arc.info.getDeparture().getName().equals(f.info.getName())) {
                     src.Time time = new Time(parseDay(day), arc.info.getDepartureTime().getHour(), arc.info.getDepartureTime().getMinute());
-                    pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info), arc.info, time));
+                    pq.offer(new PQNode(arc.neighbor, arc.info.getPrice(),(double) arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),(double) arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(), arc.info, time));
                     added = true;
                 }
             }
@@ -503,20 +509,22 @@ public abstract class GraphAdjList{
         while(!pq.isEmpty()) {
             PQNode aux = pq.poll();
             if(aux.node == t)
-                return aux.itinerary;
+                return aux;
             //if(!aux.node.visited) {
                 //aux.node.visited = true;	//Si o si hay que marcarlo cuando lo saco.
                 for(Arc	arc : aux.node.adj) {
                     if(!aux.itinerary.contains(arc) && arc.info.getDeparture().getName().equals(aux.node.info.getName())) {
-                        Flight prevFlight = aux.itinerary.get(aux.itinerary.size() - 1);
+                        //Flight prevFlight = aux.itinerary.get(aux.itinerary.size() - 1);
                         for (String day:arc.info.getWeekDay()) {
-                            pq.offer(new PQNode(arc.neighbor, aux.value + getValue.get(arc.info), aux.itinerary, arc.info, new Time(parseDay(day), arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(), arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute())));
+                            Time salida=new Time(parseDay(day),arc.info.getDepartureTime().getHour(),arc.info.getDepartureTime().getMinute());
+                            src.Time auxtime = new Time(parseDay(day),arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(), arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute());
+                            pq.offer(new PQNode(arc.neighbor, aux.price + arc.info.getPrice(),aux.ft + arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),tiempoDeEspera(aux.time,salida)+arc.info.getDuration().getHour()*60+arc.info.getDuration().getMinute(), aux.itinerary, arc.info, auxtime));
                         }
                     }
                 }
            // }
         }
-        return new ArrayList<>();
+        return null;
     }
 
     public List<Flight> worldTripPrice(String airName, GetValue getValue) {
