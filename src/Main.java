@@ -18,24 +18,14 @@ public class Main {
         AirSystem airSystem = new AirSystem();
         airSystem.addAirport("A", 12., 12.);
         airSystem.addAirport("B", 13., 13.);
-        /*airSystem.addAirport("C", 15., 15.);
-        airSystem.addAirport("D", 14., 14.);
-        airSystem.addAirport("E", 16., 16.);
-        airSystem.addAirport("F", 16., 16.);*/
         List<String> l = new ArrayList<>();
 
         l.add("Lu");
 
         airSystem.addFlight("AB", 2232, l, "A", "B", new src.Time(0,0), new src.Time(1,0), 1.0);
-        airSystem.deleteAllFlights();
-        /*airSystem.addFlight("EF", 3232, l, "E", "F", new src.Time(7,3), new src.Time(1,0), 1.0);
-        airSystem.addFlight("AF", 2222, l, "A", "F", new src.Time(0,0), new src.Time(400,0), 50.0);
-        airSystem.addFlight("BE", 2222, l, "B", "E", new src.Time(0,0), new src.Time(1,0), 50.0);*/
 
-        ArrayList<Flight> res = airSystem.getAirports().minPrice("A", "B", l);
-        System.out.println(res);/*
-        res = airSystem.getAirports().minFt("A", "B", l);
-        System.out.println(res);*/
+        GraphAdjList.PQNode res = airSystem.getAirports().minPrice("A", "B", l);
+        System.out.println(res.itinerary);
 
 
         //AirSystem airSystem = new AirSystem();
@@ -187,7 +177,7 @@ public class Main {
                         System.out.println("Operation failed, please enter a valid command");
                     }else
                     {
-
+                        changeOutPutFormat(commands[1],commands[2]);
                     }
                     break;
                 case "quit":
@@ -205,20 +195,23 @@ public class Main {
         }
 
     }
+    private static void changeOutPutFormat(String type, String fileString){
+
+    }
 
     private static void findRoute(String source, String dest, String priority, String daysString, AirSystem airSystem) {
         List<String> days = toDayList(daysString);
         if(priority.equals("pr")){ //PRICE
-            ArrayList<Flight> res = airSystem.getAirports().minPrice(source, dest, days);
-            System.out.println(res);
+            GraphAdjList.PQNode res = airSystem.getAirports().minPrice(source, dest, days);
+            System.out.println(res.itinerary);
         }
         else if(priority.equals("ft")){ //FLIGHT TIME
-            ArrayList<Flight> res = airSystem.getAirports().minFt(source, dest, days);
-            System.out.println(res);
+            GraphAdjList.PQNode res = airSystem.getAirports().minFt(source, dest, days);
+            System.out.println(res.itinerary);
         }
         else{//TOTAL TIME
-            ArrayList<Flight> res = airSystem.getAirports().minTt(source, dest, days);
-            System.out.println(res);
+            GraphAdjList.PQNode res = airSystem.getAirports().minTt(source, dest, days);
+            System.out.println(res.itinerary);
         }
 
     }
