@@ -32,7 +32,7 @@ public class FileManager {
             int i = 0;
             for (Flight flight : node.itinerary) {
                 String day = node.days.get(i);
-                formatter.format("%s#%s#%d#%s#%s", flight.getDeparture().getName(), flight.getAirline(), flight.getNumber(), day, flight.getArrival().getName());
+                formatter.format("%s#%s#%d#%s#%s%n", flight.getDeparture().getName(), flight.getAirline(), flight.getNumber(), day, flight.getArrival().getName());
                 i++;
             }
         }else{
