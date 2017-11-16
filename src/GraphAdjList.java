@@ -424,14 +424,20 @@ public abstract class GraphAdjList{
             itinerary.add(flight);
             days.add(day);
         }
-        public PQNode(Node node,Double price, Double ft, Double tt, ArrayList<Flight> stack, Flight flight,ArrayList<String> days,String day, src.Time time){
+        public PQNode(Node node,Double price, Double ft, Double tt, ArrayList<Flight> stack, Flight flight, ArrayList<String> days,String day, src.Time time){
             this.node=node;
             //this.value=value;
             this.time = time;
-            itinerary=new ArrayList<>(stack);
-            itinerary.add(flight);
-            this.days=new ArrayList<>(days);
-            this.days.add(day);
+            if(stack != null) {
+                itinerary = new ArrayList<>(stack);
+                if (flight != null)
+                    itinerary.add(flight);
+            }
+            if(days != null) {
+                this.days = new ArrayList<>(days);
+                if (day != null)
+                    this.days.add(day);
+            }
             this.price=price;
             this.ft=ft;
             this.tt=tt;
@@ -574,17 +580,17 @@ public abstract class GraphAdjList{
     }
 
 
-    private List<Flight> worldTrip(Node n, GetValue getValue) {
+    private ArrayList<Flight> worldTrip(Node n, GetValue getValue) {
         List<Node> l = new LinkedList<>();
         List<Flight> solution = new LinkedList<>();
-        List<List<Flight>> solutions = new LinkedList<>();
+        List<ArrayList<Flight>> solutions = new LinkedList<>();
         clearMarks();
         worldTripRec(n, n, l, solution, solutions);
-        List<Flight> bestPath = null;
+        ArrayList<Flight> bestPath = null;
         Double bestPerformance = null;
 
         //Elijo la mejor solucion de todas las posibles
-        for(List<Flight> list: solutions) {
+        for(ArrayList<Flight> list: solutions) {
             double localPerformance = getPerformance(list, getValue);
             System.out.println(list.toString()+" "+localPerformance);
             if(bestPerformance == null || localPerformance<bestPerformance) {
@@ -597,14 +603,14 @@ public abstract class GraphAdjList{
         return bestPath;
     }
 
-    private void worldTripRec(Node start, Node node, List<Node> l, List<Flight> sol, List<List<Flight>> solutions) {
+    private void worldTripRec(Node start, Node node, List<Node> l, List<Flight> sol, List<ArrayList<Flight>> solutions) {
         node.visited = true;
         l.add(node);
         for(Arc arc: node.adj) {
             if(l.size() == nodeList.size() && arc.neighbor.info.getName().equals(start.info.getName())) {
                 l.add(start);
                 sol.add(arc.info);
-                solutions.add(new LinkedList<>(sol));
+                solutions.add(new ArrayList<>(sol));
                 sol.remove(sol.size()-1);
                 l.remove(l.size()-1);
             }
@@ -648,20 +654,22 @@ public abstract class GraphAdjList{
         Node n = getNode(airName);
         if(n == null)
             return null;
-        List<Flight> flightList = worldTrip(n, getValuePrice);
+        ArrayList<Flight> flightList = worldTrip(n, getValuePrice);
         Flight lastFlight = flightList.get(flightList.size()-1);
         Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
-        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime), getPerformanceTt(flightList, getValueTotalTime), arrivalTime);
+        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime),
+                getPerformanceTt(flightList, getValueTotalTime), flightList, null, null, null, arrivalTime);
     }
 
     public PQNode worldTripFlightTime(String airName) {
         Node n = getNode(airName);
         if(n == null)
             return null;
-        List<Flight> flightList = worldTrip(n, getValueFlightTime);
+        ArrayList<Flight> flightList = worldTrip(n, getValueFlightTime);
         Flight lastFlight = flightList.get(flightList.size()-1);
         Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
-        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime), getPerformanceTt(flightList, getValueTotalTime), arrivalTime);
+        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime),
+                getPerformanceTt(flightList, getValueTotalTime), flightList, null, null, null, arrivalTime);
     }
 
     public PQNode worldTripTotalTime(String airName) {
@@ -670,14 +678,14 @@ public abstract class GraphAdjList{
             return null;
         List<Node> l = new LinkedList<>();
         List<Flight> solution = new LinkedList<>();
-        List<List<Flight>> solutions = new LinkedList<>();
+        List<ArrayList<Flight>> solutions = new LinkedList<>();
         clearMarks();
         worldTripRec(n, n, l, solution, solutions);
-        List<Flight> bestPath = null;
+        ArrayList<Flight> bestPath = null;
         Double bestPerformance = null;
 
         //Elijo la mejor solucion de todas las posibles
-        for(List<Flight> list: solutions) {
+        for(ArrayList<Flight> list: solutions) {
             double localPerformance = getPerformanceTt(list, getValueTotalTime);
             System.out.println(list.toString()+" "+localPerformance);
             if(bestPerformance == null || localPerformance<bestPerformance) {
@@ -688,10 +696,11 @@ public abstract class GraphAdjList{
         if(bestPath == null)
             return null;
         System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
-        List<Flight> flightList = bestPath;
+        ArrayList<Flight> flightList = bestPath;
         Flight lastFlight = flightList.get(flightList.size()-1);
         Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
-        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime), bestPerformance, arrivalTime);
+        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime), bestPerformance,
+                flightList, null, null, null, arrivalTime);
     }
 
     private Node getNode(String airName) {
