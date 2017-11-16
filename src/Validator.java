@@ -84,13 +84,13 @@ public class Validator {
         return false;
     }
     public boolean validateType(String command) {
-        if(command=="text" || command=="KML" ){
+        if(command.equals("text") || command.equals("KML") ){
             return true;
         }
         return false;
     }
     public boolean validateOutput(String command) {
-        if(isFile(command) || command=="stdout" ){ //No estoy seguro como tiene que funcionar esto
+        if(isFile(command) || command.equals("stdout")){ //No estoy seguro como tiene que funcionar esto
             return true;
         }
         return false;

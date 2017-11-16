@@ -16,16 +16,15 @@ public class Main {
     private static void paramsManager(String[] args) {
 
         AirSystem airSystem = new AirSystem();
-        airSystem.addAirport("A", 12., 12.);
+        /*airSystem.addAirport("A", 12., 12.);
         airSystem.addAirport("B", 13., 13.);
         List<String> l = new ArrayList<>();
-
         l.add("Lu");
 
         airSystem.addFlight("AB", 2232, l, "A", "B", new src.Time(0,0), new src.Time(1,0), 1.0);
 
         GraphAdjList.PQNode res = airSystem.getAirports().minPrice("A", "B", l);
-        System.out.println(res.itinerary);
+        System.out.println(res.itinerary);*/
 
 
         //AirSystem airSystem = new AirSystem();
@@ -34,6 +33,7 @@ public class Main {
         printHelp();
         boolean isRunning = true;
         Scanner sc = new Scanner(System.in);
+        FileManager fileManager = new FileManager();
 
         while(isRunning) {
             System.out.println("What do you want to do next?(insert command)");
@@ -156,7 +156,7 @@ public class Main {
                         System.out.println("Operation failed, please enter a valid command");
                     }else{
                         System.out.println("Finding route....");
-                        findRoute(commands[1],commands[2],commands[3],commands[4],airSystem);
+                        findRoute(commands[1],commands[2],commands[3],commands[4],airSystem, fileManager);
                     }
 
                     break;
@@ -173,11 +173,11 @@ public class Main {
                     break;
 
                 case "outputFormat":
-                    if (commands.length != 3 || !v.validateType(commands[1]) || v.validateOutput(commands[2]) ) {
+                    if (commands.length != 3 || !v.validateType(commands[1]) || !v.validateOutput(commands[2]) ) {
                         System.out.println("Operation failed, please enter a valid command");
                     }else
                     {
-                        changeOutPutFormat(commands[1],commands[2]);
+                        changeOutPutFormat(commands[1],commands[2], fileManager);
                     }
                     break;
                 case "quit":
@@ -195,25 +195,63 @@ public class Main {
         }
 
     }
-    private static void changeOutPutFormat(String type, String fileString){
+    private static boolean printToStdOut = true;
+    private static boolean printText = true;
+    private static void changeOutPutFormat(String type, String fileString, FileManager fm){
+        if(fm.formatter()!=null){
+            fm.closeFile();
+        }
+        boolean ret=type.equals("text");
+        if(fileString.equals("stdout")){
+            printToStdOut=true;
+        }
+        else{
+            fm.openFile(fileString, printText);
+            System.out.println("Printing to: "+fileString);
+            printToStdOut=false;
+        }
+        printText=ret;
+    }
+
+    private static void findRoute(String source, String dest, String priority, String daysString, AirSystem airSystem, FileManager fm) {
+        List<String> days = toDayList(daysString);
+        GraphAdjList.PQNode res;
+        if (priority.equals("pr")) { //PRICE
+            res = airSystem.getAirports().minPrice(source, dest, days);
+        } else if (priority.equals("ft")) { //FLIGHT TIME
+            res = airSystem.getAirports().minFt(source, dest, days);
+        } else {//TOTAL TIME
+            res = airSystem.getAirports().minTt(source, dest, days);
+        }
+        if(printToStdOut) {
+            printToScreen(res);
+        }else{
+            fm.openFile(fm.last(), printText);
+            fm.addRecord(res);
+            fm.closeFile();
+        }
 
     }
 
-    private static void findRoute(String source, String dest, String priority, String daysString, AirSystem airSystem) {
-        List<String> days = toDayList(daysString);
-        if(priority.equals("pr")){ //PRICE
-            GraphAdjList.PQNode res = airSystem.getAirports().minPrice(source, dest, days);
-            System.out.println(res.itinerary);
-        }
-        else if(priority.equals("ft")){ //FLIGHT TIME
-            GraphAdjList.PQNode res = airSystem.getAirports().minFt(source, dest, days);
-            System.out.println(res.itinerary);
-        }
-        else{//TOTAL TIME
-            GraphAdjList.PQNode res = airSystem.getAirports().minTt(source, dest, days);
-            System.out.println(res.itinerary);
-        }
+    private static void printToScreen(GraphAdjList.PQNode node) {
+        if(printText) {
+            int flightTimehours = node.ft.intValue() / 60;
+            int flightTimeminutes = node.ft.intValue() % 60;
+            int totalTimehours = node.tt.intValue() / 60;
+            int totalTimeminutes = node.tt.intValue() % 60;
 
+            System.out.printf("Precio#%f%n", node.price);
+            System.out.printf("TiempoVuelo#%02dh%02dm%n", flightTimehours, flightTimeminutes);
+            System.out.printf("TiempoTotal#%02dh%02dm%n", totalTimehours, totalTimeminutes);
+            int i = 0;
+            for (Flight flight : node.itinerary) {
+                String day = node.days.get(i);
+                System.out.printf("%s#%s#%d#%s#%s%n", flight.getDeparture().getName(), flight.getAirline(), flight.getNumber(), day, flight.getArrival().getName());
+                i++;
+            }
+        }else{
+
+        }
     }
 
     private static List<String> toDayList(String daysString) {

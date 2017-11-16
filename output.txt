@@ -1,0 +1,4 @@
+Precio#1897.430000
+TiempoVuelo#14h54m
+TiempoTotal#14h54m
+BUE#AA#123#Lu#PAR
