@@ -74,8 +74,12 @@ public class Main {
                                     src.Time time = v.getTime(commands[7]);
                                     src.Time duration = v.getDuration(commands[8]);
                                     Double price = v.toDouble(commands[9]);
-                                    airSystem.addFlight(commands[2], num , weekdays, from, to, time, duration, price);
-                                    System.out.println("Added flight successfully!");
+                                    boolean succes=airSystem.addFlight(commands[2], num , weekdays, from, to, time, duration, price);
+                                    if (succes) {
+                                        System.out.println("Added flight successfully!");
+                                    }else {
+                                        System.out.println("An airport doesn't exist");
+                                    }
                                 }
                                 break;
                             case "all":

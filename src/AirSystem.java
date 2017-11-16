@@ -32,14 +32,14 @@ public class AirSystem {
         airports.addVertex(new Airport(airportName, lat, lng));
     }
 
-    public void addFlight(String airline, Integer flightNumber, List<String> weekDays, String origin, String destination, src.Time departTime, src.Time duration, Double price) {
+    public boolean addFlight(String airline, Integer flightNumber, List<String> weekDays, String origin, String destination, src.Time departTime, src.Time duration, Double price) {
         Airport departure = airports.getVertex(origin);
         Airport arrival = airports.getVertex(destination);
         if(departure == null||arrival == null) {
-            System.out.println("no es 'nullPointerException' exactamente, pero bue.\nDeparture: "+departure+"\nArrival: "+arrival);
-            throw new NullPointerException();
+            return false;
         }
         airports.addArc(departure, arrival, new Flight(airline, flightNumber, weekDays, departure, arrival, departTime, duration, price));
+        return true;
     }
 
     public void deleteFlight(String airline, String number ) {
