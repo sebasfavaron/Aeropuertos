@@ -580,7 +580,7 @@ public abstract class GraphAdjList{
     }
 
 
-    private ArrayList<Flight> worldTrip(Node n, GetValue getValue) {
+    private ArrayList<Flight> worldTrip(Node n, GetValue getValue, List<String> days) {
         List<Node> l = new LinkedList<>();
         List<Flight> solution = new LinkedList<>();
         List<ArrayList<Flight>> solutions = new LinkedList<>();
@@ -588,18 +588,23 @@ public abstract class GraphAdjList{
         worldTripRec(n, n, l, solution, solutions);
         ArrayList<Flight> bestPath = null;
         Double bestPerformance = null;
+        List<Integer> daysNum = new ArrayList<>();
+        for(String day: days)
+            daysNum.add(parseDay(day));
 
         //Elijo la mejor solucion de todas las posibles
         for(ArrayList<Flight> list: solutions) {
-            double localPerformance = getPerformance(list, getValue);
-            System.out.println(list.toString()+" "+localPerformance);
-            if(bestPerformance == null || localPerformance<bestPerformance) {
-                bestPath = list;
-                bestPerformance = localPerformance;
+            if(daysNum.contains(list.get(0).getDepartureTime().getWeekDay())) {
+                double localPerformance = getPerformance(list, getValue);
+                //System.out.println(list.toString()+" "+localPerformance);
+                if (bestPerformance == null || localPerformance < bestPerformance) {
+                    bestPath = list;
+                    bestPerformance = localPerformance;
+                }
             }
         }
-        if(bestPath != null)
-            System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
+        //if(bestPath != null)
+            //System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
         return bestPath;
     }
 
@@ -650,29 +655,29 @@ public abstract class GraphAdjList{
         return ret;
     }
 
-    public PQNode worldTripPrice(String airName) {
+    public PQNode worldTripPrice(String airName, List<String> days) {
         Node n = getNode(airName);
         if(n == null)
             return null;
-        ArrayList<Flight> flightList = worldTrip(n, getValuePrice);
+        ArrayList<Flight> flightList = worldTrip(n, getValuePrice, days);
         Flight lastFlight = flightList.get(flightList.size()-1);
         Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
         return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime),
                 getPerformanceTt(flightList, getValueTotalTime), flightList, null, null, null, arrivalTime);
     }
 
-    public PQNode worldTripFlightTime(String airName) {
+    public PQNode worldTripFlightTime(String airName, List<String> days) {
         Node n = getNode(airName);
         if(n == null)
             return null;
-        ArrayList<Flight> flightList = worldTrip(n, getValueFlightTime);
+        ArrayList<Flight> flightList = worldTrip(n, getValueFlightTime, days);
         Flight lastFlight = flightList.get(flightList.size()-1);
         Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
         return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime),
                 getPerformanceTt(flightList, getValueTotalTime), flightList, null, null, null, arrivalTime);
     }
 
-    public PQNode worldTripTotalTime(String airName) {
+    public PQNode worldTripTotalTime(String airName, List<String> days) {
         Node n = getNode(airName);
         if(n == null)
             return null;
@@ -683,14 +688,19 @@ public abstract class GraphAdjList{
         worldTripRec(n, n, l, solution, solutions);
         ArrayList<Flight> bestPath = null;
         Double bestPerformance = null;
+        List<Integer> daysNum = new ArrayList<>();
+        for(String day: days)
+            daysNum.add(parseDay(day));
 
         //Elijo la mejor solucion de todas las posibles
         for(ArrayList<Flight> list: solutions) {
-            double localPerformance = getPerformanceTt(list, getValueTotalTime);
-            System.out.println(list.toString()+" "+localPerformance);
-            if(bestPerformance == null || localPerformance<bestPerformance) {
-                bestPath = list;
-                bestPerformance = localPerformance;
+            if(daysNum.contains(list.get(0).getDepartureTime().getWeekDay())) {
+                double localPerformance = getPerformanceTt(list, getValueTotalTime);
+                System.out.println(list.toString() + " " + localPerformance);
+                if (bestPerformance == null || localPerformance < bestPerformance) {
+                    bestPath = list;
+                    bestPerformance = localPerformance;
+                }
             }
         }
         if(bestPath == null)
