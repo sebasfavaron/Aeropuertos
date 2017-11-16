@@ -62,8 +62,6 @@ public class Main {
                         switch (command1){
                             case "airport":
                                 if(commands.length!=5 || !v.validateName(commands[2]) || !v.isCoord(commands[3],commands[4])) {
-                                    System.out.println(!v.validateName(commands[2]));
-                                    System.out.println(!v.isCoord(commands[3],commands[4]));
                                     System.out.println("Operation failed, please enter a valid command");
                                 }else{
                                     Double lat=v.toDouble(commands[3]);

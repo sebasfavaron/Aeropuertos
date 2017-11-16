@@ -141,7 +141,6 @@ public abstract class GraphAdjList{
     public void printArcs(){
         for(Node node: nodeList){
             for(Arc adj : node.adj){
-                System.out.println(node.info.getName());
                 System.out.println(adj.info.toString());
             }
         }
