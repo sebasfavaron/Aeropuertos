@@ -109,7 +109,7 @@ public class Main {
                                     }else if(commands[2].equals("flight")){
                                         if(commands[4].equals("append") || commands[4].equals("remove")){
                                             if(fileChecker.insertAll("flight", commands[3], commands[4])){
-                                                System.out.println("Insertion unsuccessful");
+                                                System.out.println("Insertion successful");
                                             }else{
                                                 System.out.println("Insertion unsuccessful");
                                             }

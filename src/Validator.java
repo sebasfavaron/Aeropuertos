@@ -158,7 +158,7 @@ public class Validator {
             if(c=='.'){
                 counter++;
             }
-            if(!Character.isDigit(c) || counter>1){
+            if((!Character.isDigit(c)&& c!='.') || (c=='.' && counter>1)){
                 return false;
             }
         }
