@@ -144,6 +144,17 @@ public class Time {
         return 7*24*60-(this.hour-other.hour-1)*60-(60-other.minute+this.minute);
     }
 
+    //No afecta al tiempo de la clase, solo devuelve la suma de este y el t2
+    public Time add(Time t2) {
+        // La suma es un poco confusa porque considero a this como un momento de la semana
+        // y a t2 como una duracion, por eso si t2.weekDay es 1 significa que dura un dia entero
+        // Asi, si sumo directo, me devuelve this + el tiempo que dure t2
+        int weekD = this.weekDay + t2.weekDay;
+        int hour = this.hour + t2.hour;
+        int min = this.minute + t2.minute;
+        return new Time(weekD, hour, min);
+    }
+
     public int getVal(){
         return weekDay * 24 * 60 + hour * 60 + minute;
     }

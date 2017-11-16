@@ -532,7 +532,8 @@ public abstract class GraphAdjList{
         return null;
     }
 
-    public List<Flight> worldTripPrice(String airName, GetValue getValue) {
+
+    public List<Flight> worldTrip(String airName, GetValue getValue) {
         Node n = null;
         for(Node node: nodeList)
             if(node.info.getName().equals(airName))
@@ -543,35 +544,25 @@ public abstract class GraphAdjList{
         List<Flight> solution = new LinkedList<>();
         List<List<Flight>> solutions = new LinkedList<>();
         clearMarks();
-        worldTripPriceRec(n, n, l, solution, solutions);
+        worldTripRec(n, n, l, solution, solutions);
         List<Flight> bestPath = null;
         Double bestPerformance = null;
-        //System.out.println("----------------------------WorldTrip----------------------------");
+
+        //Elijo la mejor solucion de todas las posibles
         for(List<Flight> list: solutions) {
             double localPerformance = getPerformance(list, getValue);
-            //System.out.println(list.toString()+" "+localPerformance);
+            System.out.println(list.toString()+" "+localPerformance);
             if(bestPerformance == null || localPerformance<bestPerformance) {
                 bestPath = list;
                 bestPerformance = localPerformance;
             }
         }
-        //System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
-        //System.out.println("-----------------------------------------------------------------");
-
+        if(bestPath != null)
+            System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
         return bestPath;
     }
 
-    private double getPerformance(List<Flight> list, GetValue getValue) {
-        double ret = 0;
-        for(Flight flight: list) {
-            if(flight == null)
-                return -1;
-            ret += getValue.get(flight);
-        }
-        return ret;
-    }
-
-    private void worldTripPriceRec(Node start, Node node, List<Node> l, List<Flight> sol, List<List<Flight>> solutions) {
+    private void worldTripRec(Node start, Node node, List<Node> l, List<Flight> sol, List<List<Flight>> solutions) {
         node.visited = true;
         l.add(node);
         for(Arc arc: node.adj) {
@@ -584,13 +575,111 @@ public abstract class GraphAdjList{
             }
             else if(!arc.neighbor.visited) {
                 sol.add(arc.info);
-                worldTripPriceRec(start, arc.neighbor, l, sol, solutions);
+                worldTripRec(start, arc.neighbor, l, sol, solutions);
             }
         }
         l.remove(l.size()-1);
         if(sol.size() != 0)
             sol.remove(sol.size()-1);
         node.visited = false;
+    }
+
+    private double getPerformance(List<Flight> list, GetValue getValue) {
+        double ret = 0;
+        for(Flight flight: list) {
+            if(flight == null)
+                return -1;
+            ret += getValue.get(flight);
+        }
+        return ret;
+    }
+
+    private double getPerformanceTt(List<Flight> list, GetValue getValue) {
+        double ret = 0;
+        Flight prev = null;
+        for(Flight flight: list) {
+            if(flight == null)
+                return -1;
+            if(prev == null) {
+                ret += getValue.get(flight);
+                prev = flight;
+            }
+            else {ret += getValue.getTt(prev, flight);}
+        }
+        return ret;
+    }
+
+    public List<Flight> worldTripPrice(String airName) {
+        return worldTrip(airName, new GetValue() {
+            @Override
+            public double get(Flight f2) {
+                return f2.getPrice();
+            }
+            public double getTt(Flight f1, Flight f2) {
+                return -1;
+            }
+        });
+    }
+
+    public List<Flight> worldTripFlightTime(String airName) {
+        return worldTrip(airName, new GetValue() {
+            @Override
+            public double get(Flight f2) {
+                //Restarle 0 horas, 0 minutos te devuelve la duracion del Time en f2.duration en minutos en int
+                return f2.getDuration().difference(new Time(0,0));
+            }
+            public double getTt(Flight f1, Flight f2) {
+                return -1;
+            }
+        });
+    }
+
+    public List<Flight> worldTripTotalTime(String airName) {
+        GetValue getValue = new GetValue() {
+            @Override
+            /**
+             * Tiempo de espera pre-vuelo + tiempo en vuelo
+             * f1: vuelo anterior
+             * f2: vuelo que sale
+             */
+            public double getTt(Flight f1, Flight f2) {
+                return f2.getDuration().difference(new Time(0,0)) +
+                        f2.getDepartureTime().difference(f1.getDepartureTime().add(f1.getDuration()));
+            }
+
+            /**
+             * Este lo llamo una vez (para el primer flight que no tiene tiempo previo de espera)
+             */
+            public double get(Flight f2) {
+                return f2.getDuration().difference(new Time(0,0));
+            }
+        };
+        Node n = null;
+        for(Node node: nodeList)
+            if(node.info.getName().equals(airName))
+                n = node;
+        if(n == null)
+            return null;
+        List<Node> l = new LinkedList<>();
+        List<Flight> solution = new LinkedList<>();
+        List<List<Flight>> solutions = new LinkedList<>();
+        clearMarks();
+        worldTripRec(n, n, l, solution, solutions);
+        List<Flight> bestPath = null;
+        Double bestPerformance = null;
+
+        //Elijo la mejor solucion de todas las posibles
+        for(List<Flight> list: solutions) {
+            double localPerformance = getPerformanceTt(list, getValue);
+            System.out.println(list.toString()+" "+localPerformance);
+            if(bestPerformance == null || localPerformance<bestPerformance) {
+                bestPath = list;
+                bestPerformance = localPerformance;
+            }
+        }
+        if(bestPath != null)
+            System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
+        return bestPath;
     }
 
     private int parseDay(String day) {
