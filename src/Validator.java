@@ -8,16 +8,10 @@ public class Validator {
 
     }
     public List<String> toWeekDays(String command){
-        Character[] charArray = toCharacterArray(command);
-        List<String> ret = new ArrayList<>();
-        String days=new String();
-        for(Character c: charArray){
-            if(c=='-'){
-                ret.add(new String(days));
-                days="";
-            }else{
-                days=days+c;
-            }
+        String[] line = command.split("-");
+        List<String> ret = new ArrayList<String>();
+        for(int i=0; i<line.length;i++){
+            ret.add(line[i]);
         }
         return ret;
     }

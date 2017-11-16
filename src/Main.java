@@ -79,11 +79,8 @@ public class Main {
                                         ||!v.validateDuration(commands[8]) ||!v.validatePrice(commands[9])) {
                                     System.out.println("Operation failed, please enter a valid command");
                                 }else{
-
-                                    System.out.println(commands[2]);
                                     Integer num=v.toInteger(commands[3]);
-                                    System.out.println(num);
-                                    List<String> weekdays=v.toWeekDays(commands[4]);
+                                    List<String> weekdays=toDayList(commands[4]);
                                     String from = commands[5];
                                     String to = commands[6];
                                     src.Time time = v.getTime(commands[7]);

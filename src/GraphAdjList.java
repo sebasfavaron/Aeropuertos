@@ -131,6 +131,7 @@ public abstract class GraphAdjList{
     public void printArcs(){
         for(Node node: getNodes()){
             for(Arc adj : node.adj){
+                System.out.println(node.info.getName());
                 System.out.println(adj.info.toString());
             }
         }
@@ -486,16 +487,16 @@ public abstract class GraphAdjList{
         });
         for (Arc arc : f.adj) {
             boolean added = false;
-            for(String day : arc.info.getWeekDay())
+            for(String day : arc.info.getWeekDay()){
                 if(!added && days.contains(day) && arc.info.getDeparture().getName().equals(f.info.getName())) {
                     src.Time time = new Time(parseDay(day), arc.info.getDepartureTime().getHour(), arc.info.getDepartureTime().getMinute());
                     pq.offer(new PQNode(arc.neighbor, getValue.get(arc.info), arc.info, time));
                     added = true;
                 }
+            }
         }
         //PQNode aux;
         //Stack<Flight> itinerary=new Stack();
-
         while(!pq.isEmpty()) {
             PQNode aux = pq.poll();
             if(aux.node == t)
