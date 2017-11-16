@@ -580,7 +580,7 @@ public abstract class GraphAdjList{
                 }
             }else {//horas<0
                 if (minutos==0){
-                    return (dias+aux)*60*24-horas*60;
+                    return (dias+aux)*60*24+horas*60;
                 }else if (minutos>0){
                     return (dias+aux)*60*24-(horas+1)*60+(60-arrivo.getMinute()+salida.getMinute());
                 }else {
