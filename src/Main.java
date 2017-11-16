@@ -47,22 +47,22 @@ public class Main {
         airSystem.addFlight("CE", 3222, mar, "C", "E", new src.Time(1,0), new src.Time(1,15), 150.0);
 
         GraphAdjList.PQNode res = airSystem.getAirports().minPrice("A", "B", mul);
-        System.out.println(res.itinerary);
+        System.out.println("Minimum price: "+res.itinerary);
 
         res = airSystem.getAirports().minFt("A", "B", mul);
-        System.out.println(res.itinerary);
+        System.out.println("Minimum flight time: "+res.itinerary);
 
         res = airSystem.getAirports().minTt("A", "B", mul);
-        System.out.println(res.itinerary);
+        System.out.println("Minimum total time: "+res.itinerary);
 
         res = airSystem.getAirports().worldTripPrice("F", mul);
-        System.out.println(res.itinerary);
+        System.out.println("WorldTripPrice: "+res.itinerary);
 
         res = airSystem.getAirports().worldTripFlightTime("A", mul);
-        System.out.println(res.itinerary);
+        System.out.println("WorldTripFlightTime: "+res.itinerary);
 
         res = airSystem.getAirports().worldTripTotalTime("A", mul);
-        System.out.println(res.itinerary);
+        System.out.println("WorldTripTotalTime: "+res.itinerary);
 
         Validator v= new Validator();
         FileChecker fileChecker = new FileChecker(airSystem,v);
@@ -308,7 +308,7 @@ public class Main {
     }
 
     private static void printHelp() {
-        System.out.println("List of commands:\n   " +
+        System.out.println("\nList of commands:\n   " +
                 "insert airport [name] [lat] [lng]\n   " +
                 "delete airport [name]\n   " +
                 "insert all airports FILE [append|replace]\n   " +
@@ -319,6 +319,8 @@ public class Main {
                 "delete all flight\n   " +
                 "findRoute [origin] [destination] [priority{ft|pr|tt}] [weekDays]\n   " +
                 "worldTrip [origin] [priority{ft|pr|tt}] [weekDays]\n   " +
-                "outputFormat [type{text|KML}] [output{file|stdout}]\n   ");
+                "outputFormat [type{text|KML}] [output{file|stdout}]\n   "+
+                "Type 'help' at any moment to bring up this list again\n"
+        );
     }
 }

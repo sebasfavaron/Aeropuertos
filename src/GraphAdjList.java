@@ -696,7 +696,7 @@ public abstract class GraphAdjList{
         for(ArrayList<Flight> list: solutions) {
             if(daysNum.contains(list.get(0).getDepartureTime().getWeekDay())) {
                 double localPerformance = getPerformanceTt(list, getValueTotalTime);
-                System.out.println(list.toString() + " " + localPerformance);
+                //System.out.println(list.toString() + " " + localPerformance);
                 if (bestPerformance == null || localPerformance < bestPerformance) {
                     bestPath = list;
                     bestPerformance = localPerformance;
@@ -705,7 +705,7 @@ public abstract class GraphAdjList{
         }
         if(bestPath == null)
             return null;
-        System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
+        //System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
         ArrayList<Flight> flightList = bestPath;
         Flight lastFlight = flightList.get(flightList.size()-1);
         Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
