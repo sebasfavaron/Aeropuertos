@@ -15,31 +15,30 @@ public class Main {
     }
     private static void paramsManager(String[] args) {
 
-        /*AirSystem airSystem = new AirSystem();
+        AirSystem airSystem = new AirSystem();
         airSystem.addAirport("A", 12., 12.);
         airSystem.addAirport("B", 13., 13.);
-        airSystem.addAirport("C", 15., 15.);
+        /*airSystem.addAirport("C", 15., 15.);
         airSystem.addAirport("D", 14., 14.);
         airSystem.addAirport("E", 16., 16.);
-        airSystem.addAirport("F", 16., 16.);
+        airSystem.addAirport("F", 16., 16.);*/
         List<String> l = new ArrayList<>();
-        l.add("Lun");
-        l.add("Mar");
-        l.add("Mie");
-        l.add("Jue");
-        l.add("Vie");
-        airSystem.addFlight("AB", 2232, l, "A", "B", new src.Time(0,0), new src.Time(1,0), 1.0);
-        airSystem.addFlight("EF", 3232, l, "E", "F", new src.Time(7,3), new src.Time(1,0), 1.0);
-        airSystem.addFlight("AF", 2222, l, "A", "F", new src.Time(0,0), new src.Time(400,0), 50.0);
-        airSystem.addFlight("BE", 2222, l, "B", "E", new src.Time(0,0), new src.Time(1,0), 50.0);
 
-        ArrayList<Flight> res = airSystem.getAirports().minPrice("A", "F", l);
-        System.out.println(res);
-        res = airSystem.getAirports().minFt("A", "F", l);
+
+        l.add("Lu");
+
+        //airSystem.addFlight("AB", 2232, l, "A", "B", new src.Time(0,0), new src.Time(1,0), 1.0);
+        /*airSystem.addFlight("EF", 3232, l, "E", "F", new src.Time(7,3), new src.Time(1,0), 1.0);
+        airSystem.addFlight("AF", 2222, l, "A", "F", new src.Time(0,0), new src.Time(400,0), 50.0);
+        airSystem.addFlight("BE", 2222, l, "B", "E", new src.Time(0,0), new src.Time(1,0), 50.0);*/
+
+        ArrayList<Flight> res = airSystem.getAirports().minPrice("A", "B", l);
+        System.out.println(res);/*
+        res = airSystem.getAirports().minFt("A", "B", l);
         System.out.println(res);*/
 
 
-        AirSystem airSystem = new AirSystem();
+        //AirSystem airSystem = new AirSystem();
         Validator v= new Validator();
         FileChecker fileChecker = new FileChecker(airSystem,v);
         printHelp();
@@ -80,7 +79,10 @@ public class Main {
                                         ||!v.validateDuration(commands[8]) ||!v.validatePrice(commands[9])) {
                                     System.out.println("Operation failed, please enter a valid command");
                                 }else{
+
+                                    System.out.println(commands[2]);
                                     Integer num=v.toInteger(commands[3]);
+                                    System.out.println(num);
                                     List<String> weekdays=v.toWeekDays(commands[4]);
                                     String from = commands[5];
                                     String to = commands[6];
@@ -169,7 +171,7 @@ public class Main {
                         System.out.println("Operation failed, please enter a valid command");
                     }else{
                         System.out.println("Finding route....");
-                        findRoute(commands[1],commands[2],commands[3],commands[4]);
+                        findRoute(commands[1],commands[2],commands[3],commands[4],airSystem);
                     }
 
                     break;
@@ -209,8 +211,30 @@ public class Main {
 
     }
 
-    private static void findRoute(String command, String command1, String command2, String command3) {
-        System.out.println("___not Implemented___");
+    private static void findRoute(String source, String dest, String priority, String daysString, AirSystem airSystem) {
+        List<String> days = toDayList(daysString);
+        if(priority.equals("pr")){ //PRICE
+            ArrayList<Flight> res = airSystem.getAirports().minPrice(source, dest, days);
+            System.out.println(res);
+        }
+        else if(priority.equals("ft")){ //FLIGHT TIME
+            ArrayList<Flight> res = airSystem.getAirports().minFt(source, dest, days);
+            System.out.println(res);
+        }
+        else{//TOTAL TIME
+            ArrayList<Flight> res = airSystem.getAirports().minTt(source, dest, days);
+            System.out.println(res);
+        }
+
+    }
+
+    private static List<String> toDayList(String daysString) {
+        String[] line = daysString.split("-");
+        List<String> ret = new ArrayList<String>();
+        for(int i=0; i<line.length;i++){
+            ret.add(line[i]);
+        }
+        return ret;
     }
 
     private static void worldTrip(String command, String command1, String command2) {

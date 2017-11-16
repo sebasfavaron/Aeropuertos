@@ -517,13 +517,13 @@ public abstract class GraphAdjList{
 
     private int parseDay(String day) {
         switch (day) {
-            case "Lun": return 1;
-            case "Mar": return 2;
-            case "Mie": return 3;
-            case "Jue": return 4;
-            case "Vie": return 5;
-            case "Sab": return 6;
-            case "Dom": return 7;
+            case "Lu": return 1;
+            case "Ma": return 2;
+            case "Mi": return 3;
+            case "Ju": return 4;
+            case "Vi": return 5;
+            case "Sa": return 6;
+            case "Do": return 7;
         }
         throw new IllegalArgumentException();
     }

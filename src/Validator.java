@@ -84,7 +84,7 @@ public class Validator {
         return false;
     }
     public boolean validatePriority(String command) {
-        if(command=="ft" || command=="pr" || command == "tt"){
+        if(command.equals("ft") || command.equals("pr") || command.equals("tt")){
             return true;
         }
         return false;
