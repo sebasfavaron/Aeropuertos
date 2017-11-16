@@ -88,6 +88,7 @@ public abstract class GraphAdjList{
 
     }
     private HashMap<Airport, Node> nodes;
+    private List<Node> nodeList;
 
     protected abstract boolean isDirected();
 
@@ -101,14 +102,22 @@ public abstract class GraphAdjList{
 
 
     public void addVertex(Airport vertex) {
+        for (Node node : nodeList){
+            if (node.info.getLat().equals(vertex.getLat()) && node.info.getLng().equals(vertex.getLng())) {
+                System.out.println("An airport already exists in that position");
+                return;
+            }
+        }
         if (!nodes.containsKey(vertex)) {
-            nodes.put(vertex, new Node(vertex));
+            Node n = new Node(vertex);
+            nodes.put(vertex, n);
+            nodeList.add(n);
         }
     }
 
     //HECHA POR SEBAS, NO SE SI ESTA BIEN
     public Airport getVertex(String vertex) {
-        for(Node node : getNodes()) {
+        for(Node node : nodeList) {
             if(node.info.toString().equals(vertex))
                 return node.info;
         }
@@ -129,7 +138,7 @@ public abstract class GraphAdjList{
         }
     }
     public void printArcs(){
-        for(Node node: getNodes()){
+        for(Node node: nodeList){
             for(Arc adj : node.adj){
                 System.out.println(node.info.getName());
                 System.out.println(adj.info.toString());
@@ -139,7 +148,7 @@ public abstract class GraphAdjList{
 
     //HECHA POR SEBAS, NO SE SI ESTA BIEN
     public Flight getArc(String flightName) {
-        for(Node node : getNodes()) {
+        for(Node node : nodeList) {
             for(Arc adj : node.adj) {
                 if(adj.info.toString().equals(flightName))
                     return adj.info;
@@ -150,7 +159,7 @@ public abstract class GraphAdjList{
 
     public int arcCount() {
         int count = 0;
-        for (Node n : getNodes())
+        for (Node n : nodeList)
             count += n.adj.size();
         if (!isDirected())
             count /= 2;
@@ -205,7 +214,7 @@ public abstract class GraphAdjList{
             return outDegree(v);
         int count = 0;
         Node node = nodes.get(v);
-        for (Node n : getNodes()) { // Recorremos lista de nodos
+        for (Node n : nodeList) { // Recorremos lista de nodos
             if (!n.equals(node)) {
                 for (Arc adj : n.adj)
                     // Recorremos lista de adyacencia
@@ -237,7 +246,7 @@ public abstract class GraphAdjList{
 
         // Primero removerlo de la lista de adyacencia de sus vecinos
         Arc e = new Arc(null, node);
-        for (Node n : getNodes()) {
+        for (Node n : nodeList) {
             if (!n.equals(node))
                 n.adj.remove(e);
         }
@@ -258,15 +267,6 @@ public abstract class GraphAdjList{
         return nodes.size();
     }
 
-    private List<Node> getNodes() {
-        List<Node> l = new ArrayList<Node>(vertexCount());
-        Iterator<Airport> it = nodes.keySet().iterator();
-        while (it.hasNext()) {
-            l.add(nodes.get(it.next()));
-        }
-        return l;
-    }
-
     public List<Airport> DFS(Airport origin) {
         Node node = nodes.get(origin);
         if (node == null)
@@ -278,10 +278,9 @@ public abstract class GraphAdjList{
     }
 
     protected void clearMarks() {
-        for (Node n : getNodes()) {
+        for (Node n : nodeList) {
             n.visited = false;
         }
-
     }
 
 
@@ -323,7 +322,7 @@ public abstract class GraphAdjList{
             return true;
         }
         clearMarks();
-        List<Node> l = getNodes();
+        List<Node> l = nodeList;
         List<Airport> laux = new ArrayList<Airport>();
         DFS(l.get(0), laux);
         for (Node node : l) {
@@ -346,7 +345,7 @@ public abstract class GraphAdjList{
     }
 
     private Node unvisited() {
-        for(Node node : getNodes()) {
+        for(Node node : nodeList) {
             if (! node.visited )
                 return node;
         }
