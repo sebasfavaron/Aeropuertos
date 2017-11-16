@@ -363,6 +363,7 @@ public abstract class GraphAdjList{
         //Double value;
         src.Time time;
         ArrayList<Flight> itinerary;
+        ArrayList<String> days;
         public Double price;
         public Double ft;
         public Double tt;
@@ -371,21 +372,25 @@ public abstract class GraphAdjList{
             //this.value=value;
             this.time = time;
             itinerary=new ArrayList<>();
+            days=new ArrayList<>();
             this.price=price;
             this.ft=ft;
             this.tt=tt;
             //itinerary.push(flight);
         }
-        public PQNode(Node node, Double price, Double ft, Double tt, Flight flight, src.Time time){
+        public PQNode(Node node, Double price, Double ft, Double tt, Flight flight,String day, src.Time time){
             this(node, price,ft,tt, time);
             itinerary.add(flight);
+            days.add(day);
         }
-        public PQNode(Node node,Double price, Double ft, Double tt, ArrayList<Flight> stack, Flight flight, src.Time time){
+        public PQNode(Node node,Double price, Double ft, Double tt, ArrayList<Flight> stack, Flight flight,ArrayList<String> days,String day, src.Time time){
             this.node=node;
             //this.value=value;
             this.time = time;
             itinerary=new ArrayList<>(stack);
             itinerary.add(flight);
+            this.days=new ArrayList<>(days);
+            this.days.add(day);
             this.price=price;
             this.ft=ft;
             this.tt=tt;
@@ -499,7 +504,7 @@ public abstract class GraphAdjList{
             for(String day : arc.info.getWeekDay()){
                 if(!added && days.contains(day) && arc.info.getDeparture().getName().equals(f.info.getName())) {
                     src.Time time = new Time(parseDay(day), arc.info.getDepartureTime().getHour(), arc.info.getDepartureTime().getMinute());
-                    pq.offer(new PQNode(arc.neighbor, arc.info.getPrice(),(double) arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),(double) arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(), arc.info, time));
+                    pq.offer(new PQNode(arc.neighbor, arc.info.getPrice(),(double) arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),(double) arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(), arc.info,day, time));
                     added = true;
                 }
             }
@@ -518,7 +523,7 @@ public abstract class GraphAdjList{
                         for (String day:arc.info.getWeekDay()) {
                             Time salida=new Time(parseDay(day),arc.info.getDepartureTime().getHour(),arc.info.getDepartureTime().getMinute());
                             src.Time auxtime = new Time(parseDay(day),arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(), arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute());
-                            pq.offer(new PQNode(arc.neighbor, aux.price + arc.info.getPrice(),aux.ft + arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),tiempoDeEspera(aux.time,salida)+arc.info.getDuration().getHour()*60+arc.info.getDuration().getMinute(), aux.itinerary, arc.info, auxtime));
+                            pq.offer(new PQNode(arc.neighbor, aux.price + arc.info.getPrice(),aux.ft + arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),tiempoDeEspera(aux.time,salida)+arc.info.getDuration().getHour()*60+arc.info.getDuration().getMinute(), aux.itinerary, arc.info,aux.days,day, auxtime));
                         }
                     }
                 }
