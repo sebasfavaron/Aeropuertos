@@ -462,7 +462,6 @@ public abstract class GraphAdjList{
                 f = nodes.get(a);
             if(a.getName().equals(to))
                 t = nodes.get(a);
-
         }
         if(f == null||t == null) {
             //throw new MyException();

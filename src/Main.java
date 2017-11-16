@@ -15,25 +15,6 @@ public class Main {
     private static void paramsManager(String[] args) {
 
         AirSystem airSystem = new AirSystem();
-        airSystem.addAirport("A", 12., 12.);
-        airSystem.addAirport("B", 13., 13.);
-        airSystem.addAirport("C", 15., 15.);
-        airSystem.addAirport("D", 14., 14.);
-        airSystem.addAirport("E", 16., 16.);
-        List<String> l = new ArrayList<>();
-        l.add("Lun");
-        l.add("Mar");
-        l.add("Mie");
-        l.add("Jue");
-        l.add("Vie");
-        airSystem.addFlight("AB", 2232, l, "A", "B", new src.Time(0,0), new src.Time(2,0), 20.0);
-        airSystem.addFlight("BC", 1111, l, "B", "C", new src.Time(3,1), new src.Time(1,0), 1.0);
-        airSystem.addFlight("CD", 5555, l, "C", "D", new src.Time(5,2), new src.Time(1,0), 1.0);
-        airSystem.addFlight("DE", 3232, l, "D", "E", new src.Time(7,3), new src.Time(1,0), 1.0);
-        airSystem.addFlight("AE", 2222, l, "A", "E", new src.Time(0,0), new src.Time(4,0), 50.0);
-        airSystem.addFlight("BE", 4231, l, "B", "E", new src.Time(2,1), new src.Time(1,0), 10000.0);
-        /*
-        AirSystem airSystem = new AirSystem();
         airSystem.addAirport("ARG", 12., 12.);
         airSystem.addAirport("FRA", 13., 13.);
         airSystem.addAirport("ENG", 15., 15.);
@@ -57,11 +38,10 @@ public class Main {
         vie.add("Vie");
         List<String> sab = new ArrayList<>();
         List<String> dom = new ArrayList<>();
-        airSystem.addFlight("AA", 2232, l, "ARG", "FRA", new src.Time(10,12), new src.Time(77,0), 20.);
+        airSystem.addFlight("AA", 2232, l, "ARG", "FRA", new src.Time(10,12), new src.Time(55,0), 20.);
         airSystem.addFlight("AA", 5555, l, "ARG", "USA", new src.Time(10,12), new src.Time(1,0), 900.);
-        airSystem.addFlight("AA", 3232, l, "USA", "ENG", new src.Time(10,12), new src.Time(1,0), 20.);
-        airSystem.addFlight("AA", 4231, l, "ENG", "FRA", new src.Time(10,12), new src.Time(1,0), 20.);
-        */
+        airSystem.addFlight("AA", 3232, l, "USA", "ENG", new src.Time(9,12), new src.Time(1,0), 20.);
+        airSystem.addFlight("AA", 4231, l, "ENG", "FRA", new src.Time(8,12), new src.Time(1,0), 20.);
         //airSystem.addFlight("AA", 1234, l, "ARG", "FRA", new src.Time(10,12), new src.Time(2,0), 60.);
         //airSystem.deleteFlight("AA#1234");
         //airSystem.addFlight("AA", 2232, lun, "ARG", "USA", new src.Time(10,12), new src.Time(10,0), 20.);
@@ -75,12 +55,12 @@ public class Main {
        // airSystem.addFlight("AA", 7232, l, "AUS", "USA", new src.Time(10,12), new src.Time(10,0), 20.);
        // airSystem.addFlight("AA", 8232, l, "USA", "ARG", new src.Time(10,12), new src.Time(10,0), 20.);
       //  airSystem.addFlight("AA", 9232, l, "AUS", "ARG", new src.Time(10,12), new src.Time(10,0), 20.);
-        ArrayList<Flight> res = airSystem.getAirports().minPrice("A", "E", l);
-        System.out.println(res);
-        res = airSystem.getAirports().minFt("A", "E", l);
-        System.out.println(res);
-        //res = airSystem.getAirports().minTt("ARG", "FRA", lun);
+        ArrayList<Flight> res = airSystem.getAirports().minPrice("ARG", "FRA", l);
         //System.out.println(res);
+        res = airSystem.getAirports().minFt("ARG", "FRA", l);
+        //System.out.println(res);
+        res = airSystem.getAirports().minTt("ARG", "FRA", l);
+        System.out.println(res);
 
         /*
         AirSystem airSystem = new AirSystem();
