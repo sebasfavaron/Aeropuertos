@@ -407,7 +407,6 @@ public abstract class GraphAdjList{
         Node node;
         //Double value;
         src.Time time;
-        Set<Airport> airports;
         ArrayList<Flight> itinerary;
         ArrayList<String> days;
         public Double price;
@@ -423,29 +422,11 @@ public abstract class GraphAdjList{
             this.ft=ft;
             this.tt=tt;
             //itinerary.push(flight);
-        }public PQNode(Node node, Double price, Double ft, Double tt, src.Time time,Airport aeropuerto){
-            this.node=node;
-            //this.value=value;
-            this.time = time;
-            itinerary=new ArrayList<>();
-            days=new ArrayList<>();
-            this.price=price;
-            this.ft=ft;
-            this.tt=tt;
-            airports=new HashSet<>();
-            airports.add(aeropuerto);
-            //itinerary.push(flight);
         }
         public PQNode(Node node, Double price, Double ft, Double tt, Flight flight,String day, src.Time time){
             this(node, price,ft,tt, time);
             itinerary.add(flight);
             days.add(day);
-        }
-        public PQNode(Node node, Double price, Double ft, Double tt, Flight flight,String day, src.Time time,Airport airport){
-            this(node, price,ft,tt, time,airport);
-            itinerary.add(flight);
-            days.add(day);
-            airports.add(airport);
         }
         public PQNode(Node node,Double price, Double ft, Double tt, ArrayList<Flight> stack, Flight flight, ArrayList<String> days,String day, src.Time time){
             this.node=node;
@@ -465,53 +446,7 @@ public abstract class GraphAdjList{
             this.ft=ft;
             this.tt=tt;
         }
-        public PQNode(Node node,Double price, Double ft, Double tt, ArrayList<Flight> stack, Flight flight, ArrayList<String> days,String day, src.Time time,Set<Airport> aeropuertos,Airport airport){
-            this.node=node;
-            //this.value=value;
-            this.time = time;
-            if(stack != null) {
-                itinerary = new ArrayList<>(stack);
-                if (flight != null)
-                    itinerary.add(flight);
-            }
-            if(days != null) {
-                this.days = new ArrayList<>(days);
-                if (day != null)
-                    this.days.add(day);
-            }
-            if(aeropuertos != null) {
-                this.airports = new HashSet<>(aeropuertos);
-                if (day != null)
-                    this.airports.add(airport);
-            }
-            this.price=price;
-            this.ft=ft;
-            this.tt=tt;
-        }
-    } public PQNode minTPrice(String from,  List<String> days){
-        return minTDistance(from, from, new Comparator<PQNode>() {
-            @Override
-            public int compare(PQNode pqNode, PQNode t1) {
-                return (int)( pqNode.price-t1.price);
-            }
-        }, days);
     }
-    public PQNode minTFt(String from,List<String> days){
-        return minTDistance(from, from, new Comparator<PQNode>() {
-            @Override
-            public int compare(PQNode pqNode, PQNode t1) {
-                return (int)(pqNode.ft-t1.ft);
-            }
-        }, days);
-    } public PQNode minTTt(String from, List<String> days) {
-        return minTDistance(from,from, new Comparator<PQNode>() {
-            @Override
-            public int compare(PQNode pqNode, PQNode t1) {
-                return (int) (pqNode.tt - t1.tt);
-            }
-        }, days);
-    }
-
     public PQNode minPrice(String from, String to, List<String> days){
         return minDistance(from, to, new Comparator<PQNode>() {
             @Override
@@ -651,57 +586,7 @@ public abstract class GraphAdjList{
         }
         return null;
     }
-    private PQNode minTDistance(String from, String to, Comparator<PQNode> cmp, List<String> days){
-        Node f = null, t = null;
-        for(Airport a : nodes.keySet()) {
-            if(a.getName().equals(from))
-                f = nodes.get(a);
-            if(a.getName().equals(to))
-                t = nodes.get(a);
-        }
-        if(f == null||t == null) {
-            //throw new MyException();
-            return null;
-        }
-        clearMarks();	//	Luego voy a marcar los nodos que ya use para no llegar la lista en loop
-        //tendria que cambiar el codigo para q acepte comparators
-        PriorityQueue<PQNode> pq = new PriorityQueue<>(cmp);
-        for (Arc arc : f.adj) {
-            boolean added = false;
-            for(String day : arc.info.getWeekDay()){
-                if(!added && days.contains(day) && arc.info.getDeparture().getName().equals(f.info.getName())) {
-                    src.Time time = new Time(parseDay(day), arc.info.getDepartureTime().getHour(), arc.info.getDepartureTime().getMinute());
-                    pq.offer(new PQNode(arc.neighbor, arc.info.getPrice(),(double) arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),(double) arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(), arc.info,day, time,f.info));
-                    added = true;
-                }
-            }
-        }
-        //PQNode aux;
-        //Stack<Flight> itinerary=new Stack();
-        while(!pq.isEmpty()) {
-            PQNode aux = pq.poll();
-            if(aux.node == t&&aux.airports.size()==nodes.size())
-                    return aux;
-            //if(!aux.node.visited) {
-            //aux.node.visited = true;	//Si o si hay que marcarlo cuando lo saco.
-            for(Arc	arc : aux.node.adj) {
-                if(!aux.itinerary.contains(arc) && arc.info.getDeparture().getName().equals(aux.node.info.getName())) {
-                    //Flight prevFlight = aux.itinerary.get(aux.itinerary.size() - 1);
-                    for (String day:arc.info.getWeekDay()) {
-                        Time salida=new Time(parseDay(day),arc.info.getDepartureTime().getHour(),arc.info.getDepartureTime().getMinute());
-                        src.Time auxtime = new Time(parseDay(day),arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(),
-                                arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute());
-                        pq.offer(new PQNode(arc.neighbor, aux.price + arc.info.getPrice(),
-                                aux.ft + arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),
-                                tiempoDeEspera(aux.time,salida)+arc.info.getDuration().getHour()*60+arc.info.getDuration().getMinute(),
-                                aux.itinerary, arc.info,aux.days,day, auxtime,aux.airports,arc.neighbor.info));
-                    }
-                }
-            }
-            // }
-        }
-        return null;
-    }
+
 
     private PQNode worldTrip(Node n, GetValue getValue, List<String> departureDays) {
         List<Node> l = new LinkedList<>();
