@@ -604,7 +604,6 @@ public abstract class GraphAdjList{
         for(ArrayList<Flight> list: solutions) {
             if(daysNum.contains(list.get(0).getDepartureTime().getWeekDay())) {
                 double localPerformance = getPerformance(list, getValue);
-                //System.out.println(list.toString()+" "+localPerformance);
                 if (bestPerformance == null || localPerformance < bestPerformance) {
                     bestPath = list;
                     bestPerformance = localPerformance;
@@ -648,7 +647,7 @@ public abstract class GraphAdjList{
                 sol.remove(sol.size()-1);
                 l.remove(l.size()-1);
             }
-            else if(!arc.neighbor.visited) {
+            if(!arc.neighbor.visited && arc.info.getDeparture().getName().equals(node.info.getName())) {
                 sol.add(arc.info);
                 worldTripRec(start, arc.neighbor, l, sol, solutions);
             }
@@ -728,7 +727,6 @@ public abstract class GraphAdjList{
         for(ArrayList<Flight> list: solutions) {
             if(daysNum.contains(list.get(0).getDepartureTime().getWeekDay())) {
                 double localPerformance = getPerformanceTt(list, getValueTotalTime);
-                //System.out.println(list.toString() + " " + localPerformance);
                 if (bestPerformance == null || localPerformance < bestPerformance) {
                     bestPath = list;
                     bestPerformance = localPerformance;
