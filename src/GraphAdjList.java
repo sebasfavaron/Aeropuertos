@@ -152,6 +152,10 @@ public abstract class GraphAdjList{
                 System.out.println("An airport already exists in that position");
                 return;
             }
+            if (node.info.getName().equals(vertex.getName())) {
+                System.out.println("That name is taken");
+                return;
+            }
         }
         if (!nodes.containsKey(vertex)) {
             Node n = new Node(vertex);
