@@ -691,7 +691,7 @@ public abstract class GraphAdjList{
         PQNode pqNode = worldTrip(n, getValuePrice, days);
         pqNode.price = getPerformance(pqNode.itinerary, getValuePrice);
         pqNode.ft = getPerformance(pqNode.itinerary, getValueFlightTime);
-        pqNode.tt = getPerformance(pqNode.itinerary, getValueTotalTime);
+        pqNode.tt = getPerformanceTt(pqNode.itinerary, getValueTotalTime);
         return pqNode;
     }
 
@@ -702,7 +702,7 @@ public abstract class GraphAdjList{
         PQNode pqNode = worldTrip(n, getValueFlightTime, days);
         pqNode.price = getPerformance(pqNode.itinerary, getValuePrice);
         pqNode.ft = getPerformance(pqNode.itinerary, getValueFlightTime);
-        pqNode.tt = getPerformance(pqNode.itinerary, getValueTotalTime);
+        pqNode.tt = getPerformanceTt(pqNode.itinerary, getValueTotalTime);
         return pqNode;
     }
 
@@ -743,7 +743,7 @@ public abstract class GraphAdjList{
         String arrivalDay = parseInttoDay(arrivalTime.getWeekDay());
         days.add(arrivalDay);
         return new PQNode(n, getPerformance(bestPath, getValuePrice), getPerformance(bestPath, getValueFlightTime),
-                getPerformance(bestPath, getValueTotalTime), bestPath, lastFlight, days, arrivalDay, arrivalTime);
+                getPerformanceTt(bestPath, getValueTotalTime), bestPath, lastFlight, days, arrivalDay, arrivalTime);
     }
 
     private Node getNode(String airName) {
