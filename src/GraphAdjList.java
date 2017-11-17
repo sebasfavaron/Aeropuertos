@@ -689,6 +689,9 @@ public abstract class GraphAdjList{
         if(n == null)
             return null;
         PQNode pqNode = worldTrip(n, getValuePrice, days);
+        if(pqNode==null){
+            return null;
+        }
         pqNode.price = getPerformance(pqNode.itinerary, getValuePrice);
         pqNode.ft = getPerformance(pqNode.itinerary, getValueFlightTime);
         pqNode.tt = getPerformanceTt(pqNode.itinerary, getValueTotalTime);
