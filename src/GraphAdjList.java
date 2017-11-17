@@ -576,7 +576,7 @@ public abstract class GraphAdjList{
                             src.Time auxtime = new Time(parseDay(day),arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(),
                                     arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute());
                             pq.offer(new PQNode(arc.neighbor, aux.price + arc.info.getPrice(),
-                                    aux.ft + arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),
+                                    aux.ft + arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),aux.tt+
                                     tiempoDeEspera(aux.time,salida)+arc.info.getDuration().getHour()*60+arc.info.getDuration().getMinute(),
                                     aux.itinerary, arc.info,aux.days,day, auxtime));
                         }
