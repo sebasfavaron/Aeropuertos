@@ -639,7 +639,8 @@ public abstract class GraphAdjList{
         node.visited = true;
         l.add(node);
         for(Arc arc: node.adj) {
-            if(l.size() == nodeList.size() && arc.neighbor.info.getName().equals(start.info.getName())) {
+            if(l.size() == nodeList.size() && arc.neighbor.info.getName().equals(start.info.getName())
+                    && arc.info.getDeparture().getName().equals(node.info.getName())) {
                 l.add(start);
                 sol.add(arc.info);
                 solutions.add(new ArrayList<>(sol));
