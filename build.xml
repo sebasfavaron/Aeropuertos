@@ -1,0 +1,48 @@
+<project name="Aeropuertos" basedir="." default="jar">
+
+    <property name="src.dir"     value="src"/>
+    <property name="build.dir"   value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="."/>
+    <property name="main-class"  value="src.Main"/>
+
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+    </target>
+
+    <target name="compile" depends="init"
+            description="compile the source">
+        <!-- Compile the java code from ${src} into ${build} -->
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="true">
+            <classpath>
+                <path id="de.micromata.opengis.kml.v_2_2_0" location="lib/JavaAPIforKml-2.2.1.jar"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile"
+            description="generate the distribution">
+        <!-- Create the distribution directory -->
+        <!--<mkdir dir="${dist}/lib"/> ${dist}/lib/-->
+
+        <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}"/>
+            </manifest>
+        </jar>
+    </target>
+
+
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="clean-build" depends="clean,jar"/>
+
+</project>

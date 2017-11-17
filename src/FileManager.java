@@ -1,12 +1,12 @@
 package src;
 
-import de.micromata.opengis.kml.v_2_2_0.*;
+import de.micromata.opengis.kml.v_2_2_0.Document;
+import de.micromata.opengis.kml.v_2_2_0.Folder;
+import de.micromata.opengis.kml.v_2_2_0.Kml;
+import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
 import java.io.File;
-import java.security.spec.ECField;
-import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.List;
 
 public class FileManager {
     private Formatter formatter;
