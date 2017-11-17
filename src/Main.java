@@ -276,6 +276,10 @@ public class Main {
 
     private static void printToScreen(GraphAdjList.PQNode node) {
         if(printText) {
+            if(node==null){
+                System.out.println("Not Found");
+                return;
+            }
             int flightTimehours = node.ft.intValue() / 60;
             int flightTimeminutes = node.ft.intValue() % 60;
             int totalTimehours = node.tt.intValue() / 60;

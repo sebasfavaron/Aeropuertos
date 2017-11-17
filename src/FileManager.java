@@ -19,10 +19,15 @@ public class FileManager {
         return true;
     }
     public void addRecord(GraphAdjList.PQNode node){
+        if(node==null){
+            formatter.format("Not found");
+            return;
+        }
         int flightTimehours = node.ft.intValue() / 60;
         int flightTimeminutes = node.ft.intValue() % 60;
         int totalTimehours = node.tt.intValue() / 60;
         int totalTimeminutes = node.tt.intValue() % 60;
+
         if(printText) {
 
             formatter.format("Precio#%f%n", node.price);
