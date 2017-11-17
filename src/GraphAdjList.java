@@ -619,7 +619,6 @@ public abstract class GraphAdjList{
         Flight lastFlight = bestPath.get(bestPath.size()-1);
         Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
         String arrivalDay = parseInttoDay(arrivalTime.getWeekDay());
-        days.add(arrivalDay);
         return new PQNode(n, null, null, null, bestPath, null, days, arrivalDay, arrivalTime);
     }
 
@@ -742,7 +741,6 @@ public abstract class GraphAdjList{
         Flight lastFlight = bestPath.get(bestPath.size()-1);
         Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
         String arrivalDay = parseInttoDay(arrivalTime.getWeekDay());
-        days.add(arrivalDay);
         return new PQNode(n, getPerformance(bestPath, getValuePrice), getPerformance(bestPath, getValueFlightTime),
                 getPerformanceTt(bestPath, getValueTotalTime), bestPath, null, days, arrivalDay, arrivalTime);
     }
