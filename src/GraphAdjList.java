@@ -573,8 +573,12 @@ public abstract class GraphAdjList{
                         //Flight prevFlight = aux.itinerary.get(aux.itinerary.size() - 1);
                         for (String day:arc.info.getWeekDay()) {
                             Time salida=new Time(parseDay(day),arc.info.getDepartureTime().getHour(),arc.info.getDepartureTime().getMinute());
-                            src.Time auxtime = new Time(parseDay(day),arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(), arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute());
-                            pq.offer(new PQNode(arc.neighbor, aux.price + arc.info.getPrice(),aux.ft + arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),tiempoDeEspera(aux.time,salida)+arc.info.getDuration().getHour()*60+arc.info.getDuration().getMinute(), aux.itinerary, arc.info,aux.days,day, auxtime));
+                            src.Time auxtime = new Time(parseDay(day),arc.info.getDepartureTime().getHour()+arc.info.getDuration().getHour(),
+                                    arc.info.getDepartureTime().getMinute()+arc.info.getDuration().getMinute());
+                            pq.offer(new PQNode(arc.neighbor, aux.price + arc.info.getPrice(),
+                                    aux.ft + arc.info.getDuration().getHour() * 60 + arc.info.getDuration().getMinute(),
+                                    tiempoDeEspera(aux.time,salida)+arc.info.getDuration().getHour()*60+arc.info.getDuration().getMinute(),
+                                    aux.itinerary, arc.info,aux.days,day, auxtime));
                         }
                     }
                 }
@@ -584,7 +588,7 @@ public abstract class GraphAdjList{
     }
 
 
-    private ArrayList<Flight> worldTrip(Node n, GetValue getValue, List<String> days) {
+    private PQNode worldTrip(Node n, GetValue getValue, List<String> departureDays) {
         List<Node> l = new LinkedList<>();
         List<Flight> solution = new LinkedList<>();
         List<ArrayList<Flight>> solutions = new LinkedList<>();
@@ -593,7 +597,7 @@ public abstract class GraphAdjList{
         ArrayList<Flight> bestPath = null;
         Double bestPerformance = null;
         List<Integer> daysNum = new ArrayList<>();
-        for(String day: days)
+        for(String day: departureDays)
             daysNum.add(parseDay(day));
 
         //Elijo la mejor solucion de todas las posibles
@@ -607,9 +611,30 @@ public abstract class GraphAdjList{
                 }
             }
         }
-        //if(bestPath != null)
-            //System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
-        return bestPath;
+        if(bestPath == null)
+            return null;
+        ArrayList<String> days = new ArrayList<>();
+        for(Flight flight: bestPath) {
+            days.add(parseInttoDay(flight.getDepartureTime().getWeekDay()));
+        }
+        Flight lastFlight = bestPath.get(bestPath.size()-1);
+        Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
+        String arrivalDay = parseInttoDay(arrivalTime.getWeekDay());
+        days.add(arrivalDay);
+        return new PQNode(n, null, null, null, bestPath, lastFlight, days, arrivalDay, arrivalTime);
+    }
+
+    private String parseInttoDay(int num) {
+        switch (num) {
+            case 0: return "Lu";
+            case 1: return "Ma";
+            case 2: return "Mi";
+            case 3: return "Ju";
+            case 4: return "Vi";
+            case 5: return "Sa";
+            case 6: return "Do";
+        }
+        throw new IllegalArgumentException("Not a valid day number");
     }
 
     private void worldTripRec(Node start, Node node, List<Node> l, List<Flight> sol, List<ArrayList<Flight>> solutions) {
@@ -663,25 +688,25 @@ public abstract class GraphAdjList{
         Node n = getNode(airName);
         if(n == null)
             return null;
-        ArrayList<Flight> flightList = worldTrip(n, getValuePrice, days);
-        Flight lastFlight = flightList.get(flightList.size()-1);
-        Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
-        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime),
-                getPerformanceTt(flightList, getValueTotalTime), flightList, null, null, null, arrivalTime);
+        PQNode pqNode = worldTrip(n, getValuePrice, days);
+        pqNode.price = getPerformance(pqNode.itinerary, getValuePrice);
+        pqNode.ft = getPerformance(pqNode.itinerary, getValueFlightTime);
+        pqNode.tt = getPerformance(pqNode.itinerary, getValueTotalTime);
+        return pqNode;
     }
 
     public PQNode worldTripFlightTime(String airName, List<String> days) {
         Node n = getNode(airName);
         if(n == null)
             return null;
-        ArrayList<Flight> flightList = worldTrip(n, getValueFlightTime, days);
-        Flight lastFlight = flightList.get(flightList.size()-1);
-        Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
-        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime),
-                getPerformanceTt(flightList, getValueTotalTime), flightList, null, null, null, arrivalTime);
+        PQNode pqNode = worldTrip(n, getValueFlightTime, days);
+        pqNode.price = getPerformance(pqNode.itinerary, getValuePrice);
+        pqNode.ft = getPerformance(pqNode.itinerary, getValueFlightTime);
+        pqNode.tt = getPerformance(pqNode.itinerary, getValueTotalTime);
+        return pqNode;
     }
 
-    public PQNode worldTripTotalTime(String airName, List<String> days) {
+    public PQNode worldTripTotalTime(String airName, List<String> departureDays) {
         Node n = getNode(airName);
         if(n == null)
             return null;
@@ -693,7 +718,7 @@ public abstract class GraphAdjList{
         ArrayList<Flight> bestPath = null;
         Double bestPerformance = null;
         List<Integer> daysNum = new ArrayList<>();
-        for(String day: days)
+        for(String day: departureDays)
             daysNum.add(parseDay(day));
 
         //Elijo la mejor solucion de todas las posibles
@@ -709,12 +734,16 @@ public abstract class GraphAdjList{
         }
         if(bestPath == null)
             return null;
-        //System.out.println("Best: "+bestPath.toString()+" "+bestPerformance);
-        ArrayList<Flight> flightList = bestPath;
-        Flight lastFlight = flightList.get(flightList.size()-1);
+        ArrayList<String> days = new ArrayList<>();
+        for(Flight flight: bestPath) {
+            days.add(parseInttoDay(flight.getDepartureTime().getWeekDay()));
+        }
+        Flight lastFlight = bestPath.get(bestPath.size()-1);
         Time arrivalTime = lastFlight.getDepartureTime().add(lastFlight.getDuration());
-        return new PQNode(n, getPerformance(flightList, getValuePrice), getPerformance(flightList, getValueFlightTime), bestPerformance,
-                flightList, null, null, null, arrivalTime);
+        String arrivalDay = parseInttoDay(arrivalTime.getWeekDay());
+        days.add(arrivalDay);
+        return new PQNode(n, getPerformance(bestPath, getValuePrice), getPerformance(bestPath, getValueFlightTime),
+                getPerformance(bestPath, getValueTotalTime), bestPath, lastFlight, days, arrivalDay, arrivalTime);
     }
 
     private Node getNode(String airName) {
