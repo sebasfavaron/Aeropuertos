@@ -16,54 +16,6 @@ public class Main {
     private static void paramsManager(String[] args) {
 
         AirSystem airSystem = new AirSystem();
-        airSystem.addAirport("A", 12., 15.);
-        airSystem.addAirport("B", 13., 15.);
-        airSystem.addAirport("C", 15., 15.);
-        airSystem.addAirport("D", 14., 14.);
-        airSystem.addAirport("E", 16., 16.);
-        airSystem.addAirport("F", 13., 16.);
-        List<String> mul = new ArrayList<>();
-        mul.add("Lu");
-        mul.add("Mi");
-        mul.add("Vi");
-        List<String> lun = new ArrayList<>();
-        lun.add("Lu");
-        List<String> mar = new ArrayList<>();
-        mar.add("Ma");
-        List<String> sab = new ArrayList<>();
-        sab.add("Sa");
-
-        airSystem.addFlight("AB", 1232, mul, "A", "B", new src.Time(10,0), new src.Time(3,0), 100.0);
-        airSystem.addFlight("AD", 2232, lun, "A", "D", new src.Time(20,45), new src.Time(5,30), 80.0);
-        airSystem.addFlight("EF", 3232, mul, "E", "F", new src.Time(7,3), new src.Time(1,0), 150.0);
-        airSystem.addFlight("AF", 4222, mul, "A", "F", new src.Time(10,0), new src.Time(40,0), 50.0);
-        airSystem.addFlight("BE", 5222, sab, "B", "E", new src.Time(12,0), new src.Time(2,20), 50.0);
-        airSystem.addFlight("BD", 6222, mar, "B", "D", new src.Time(15,0), new src.Time(1,0), 120.0);
-        airSystem.addFlight("CF", 7222, mul, "C", "F", new src.Time(20,45), new src.Time(1,30), 30.0);
-        airSystem.addFlight("CD", 8222, mul, "C", "D", new src.Time(10,15), new src.Time(66,0), 50.0);
-        airSystem.addFlight("AC", 9222, lun, "A", "C", new src.Time(17,0), new src.Time(1,45), 180.0);
-        airSystem.addFlight("FB", 1222, sab, "F", "B", new src.Time(20,0), new src.Time(3,0), 50.0);
-        airSystem.addFlight("CE", 2222, mul, "C", "E", new src.Time(10,15), new src.Time(4,30), 110.0);
-        airSystem.addFlight("CE", 3222, mar, "C", "E", new src.Time(1,0), new src.Time(1,15), 150.0);
-
-        GraphAdjList.PQNode res = airSystem.getAirports().minPrice("A", "B", mul);
-        System.out.println("Minimum price: "+res.itinerary);
-
-        res = airSystem.getAirports().minFt("A", "B", mul);
-        System.out.println("Minimum flight time: "+res.itinerary);
-
-        res = airSystem.getAirports().minTt("A", "B", mul);
-        System.out.println("Minimum total time: "+res.itinerary);
-
-        res = airSystem.getAirports().worldTripPrice("F", mul);
-        System.out.println("WorldTripPrice: "+res.itinerary);
-
-        res = airSystem.getAirports().worldTripFlightTime("A", mul);
-        System.out.println("WorldTripFlightTime: "+res.itinerary);
-
-        res = airSystem.getAirports().worldTripTotalTime("A", mul);
-        System.out.println("WorldTripTotalTime: "+res.itinerary);
-
         Validator v= new Validator();
         FileChecker fileChecker = new FileChecker(airSystem,v);
         printHelp();
@@ -208,7 +160,7 @@ public class Main {
                     }else
                     {
                         System.out.println("Finding route....");
-                        worldTrip(commands[1],commands[2],commands[3]);
+                        worldTrip(commands[1],commands[2],commands[3],airSystem,fileManager);
                     }
                     break;
 
@@ -295,7 +247,7 @@ public class Main {
                 i++;
             }
         }else{
-
+            System.out.println("KML has to be printed into a file");
         }
     }
 
@@ -308,8 +260,24 @@ public class Main {
         return ret;
     }
 
-    private static void worldTrip(String command, String command1, String command2) {
-        System.out.println("___not Implemented___");
+    private static void worldTrip(String source, String priority, String daysString, AirSystem airSystem, FileManager fm) {
+        List<String> days = toDayList(daysString);
+        GraphAdjList.PQNode res;
+        if (priority.equals("pr")) { //PRICE
+            res = airSystem.getAirports().worldTripPrice(source, days);
+        } else if (priority.equals("ft")) { //FLIGHT TIME
+            res = airSystem.getAirports().worldTripFlightTime(source, days);
+        } else {//TOTAL TIME
+            res = airSystem.getAirports().worldTripTotalTime(source, days);
+        }
+        if(printToStdOut) {
+            printToScreen(res);
+        }else{
+            fm.setFormatter(fm.last());
+            fm.openFile(fm.last(), printText);
+            fm.addRecord(res);
+            fm.closeFile();
+        }
     }
 
     private static void printHelp() {

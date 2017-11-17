@@ -50,7 +50,6 @@ public class FileChecker {
             return true;
         }
         catch(Exception e){
-            e.printStackTrace();
             System.out.println("File not found");
             return false;
         }
