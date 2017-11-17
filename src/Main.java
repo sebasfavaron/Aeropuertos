@@ -266,6 +266,7 @@ public class Main {
         if(printToStdOut) {
             printToScreen(res);
         }else{
+            fm.setFormatter(fm.last());
             fm.openFile(fm.last(), printText);
             fm.addRecord(res);
             fm.closeFile();

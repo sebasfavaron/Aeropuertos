@@ -1,0 +1,4 @@
+Precio#5400.000000
+TiempoVuelo#09h00m
+TiempoTotal#159h00m
+EZE#AA#111#Lu#MADMAD#IB#112#Ma#CDGCDG#AF#220#Lu#FRA
