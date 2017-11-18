@@ -6,10 +6,14 @@
     <property name="jar.dir"     value="."/>
     <property name="main-class"  value="src.Main"/>
 
+    <path id="build.classpath">
+      <fileset dir="lib">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+
     <target name="init">
-        <!-- Create the time stamp -->
-        <tstamp/>
-        <!-- Create the build directory structure used by compile -->
+        <echo>Creating directories</echo>
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${classes.dir}"/>
     </target>
@@ -18,9 +22,7 @@
             description="compile the source">
         <!-- Compile the java code from ${src} into ${build} -->
         <javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="true">
-            <classpath>
-                <path id="de.micromata.opengis.kml.v_2_2_0" location="lib/JavaAPIforKml-2.2.1.jar"/>
-            </classpath>
+            <classpath refid="build.classpath"/>
         </javac>
     </target>
 
